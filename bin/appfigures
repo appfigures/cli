@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+// Resolve the bundle relative to this file (not cwd) so the shim works from
+// wherever npm installs it. `.catch` is required because dynamic import returns
+// a promise — without it, a top-level throw in the bundle becomes an
+// UnhandledPromiseRejection instead of a clean non-zero exit.
+import(new URL('../dist/af.js', import.meta.url)).catch((err) => {
+	console.error(err)
+	process.exit(1)
+})

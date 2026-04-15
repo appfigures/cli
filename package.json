@@ -1,0 +1,35 @@
+{
+  "name": "@appfigures/cli",
+  "version": "1.0.0-alpha.3",
+  "description": "Appfigures CLI — query app metrics, reviews, and store data from your terminal",
+  "type": "module",
+  "bin": {
+    "appfigures": "./bin/appfigures",
+    "af": "./bin/appfigures"
+  },
+  "files": [
+    "dist/af.js",
+    "bin/appfigures",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appfigures/cli.git"
+  },
+  "homepage": "https://github.com/appfigures/cli#readme",
+  "bugs": {
+    "url": "https://github.com/appfigures/cli/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@napi-rs/keyring": "1.2.0"
+  }
+}
