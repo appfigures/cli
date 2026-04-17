@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-alpha.4] — 2026-04-17
+
+### Changed
+
+- **`apps search`** now uses the unified-apps endpoint and emits pagination hints when more results exist.
+- **Polished help output** — mutating commands hidden by default, exit codes tightened.
+
 ## [1.0.0-alpha.3] — 2026-04-15
 
 ### Changed

@@ -1,6 +1,6 @@
 {
   "name": "@appfigures/cli",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "description": "Appfigures CLI — query app metrics, reviews, and store data from your terminal",
   "type": "module",
   "bin": {
