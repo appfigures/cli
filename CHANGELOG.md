@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.0.0-alpha.5] — 2026-04-22
+
+### Added
+
+- **OAuth 2 browser login** — `af auth login` opens your browser; PAT still supported.
+- **`store` group** — `store app-ranks`, `store top-charts`, `store categories`, `store featured`, and `store app-listing`.
+- **`apps get`** — fetch full details for any app, with `--all-stores` to span every store it appears on.
+- **Env var overrides** — `APPFIGURES_API_KEY` (skip the keychain), `APPFIGURES_API_BASE_URL`, `APPFIGURES_OAUTH_CLIENT_ID`, `APPFIGURES_OAUTH_CLIENT_SECRET`, and `AF_VERBOSE=1`.
+- **`auth login --code`** — pass the OAuth code directly instead of pasting it into the prompt.
+- **`auth status`** shows where your active credential came from and warns when env and keychain conflict.
+- **Examples on `af --help`** — common starting points right on the root help screen.
+
+### Changed
+
+- **Renamed `apps info` → `apps get`.**
+- **Renamed `catalog rollup` → `catalog aggregate`.**
+- **`--device` is now `--device-type`** across `metrics`, `keywords`, `apple-ads`, and `store`.
+- **`metrics query`**: dataset is positional, defaults to all your apps over the last 30 days, and accepts `--app-storefronts` to scope by store.
+- **`apple-ads keywords`, `keywords rankings`, `reviews list`, `reviews breakdown`** all default to every tracked app when `appIds` is omitted.
+- **`auth logout`** revokes the token server-side and confirms whose account it's clearing.
+- **`auth login`** refuses to run when you're already authenticated, including via `APPFIGURES_API_KEY`.
+- **`-v` / `--verbose`** logs each request as it fires and redacts the `Authorization` header.
+- **Unknown flags now error** instead of silently being ignored.
+- **JSON output** is compact in non-TTY mode and pretty-printed in your terminal.
+
+### Fixed
+
+- **`metrics schema`** no longer suggests contradictory granularity options.
+- **API errors** with non-standard response bodies now forward the server's message instead of swallowing it.
+- **401 / invalid-token errors** automatically suggest `af auth login`.
+- **Ctrl-C** exits cleanly (POSIX 130); **SIGTERM** exits 143.
+- **`APPFIGURES_API_KEY`** is referred to as an environment variable consistently across help and errors.
+
 ## [1.0.0-alpha.4] — 2026-04-17
 
 ### Changed
@@ -26,7 +59,7 @@
 - **`catalog find --sort`**: The leading `-` prefix for descending order is gone. Use `--order desc` instead.
 
   Before: `af catalog find --sort -all_rating`
-  After:  `af catalog find --sort all_rating --order desc`
+  After: `af catalog find --sort all_rating --order desc`
 
   The old convention hit a citty/util.parseArgs bug: at intermediate subcommand levels, values starting with `-` that contain `_` were split into single-char boolean flags (including `-_`), which set `values._ = true` and destroyed the positionals array — throwing "boolean true is not iterable".
 

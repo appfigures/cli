@@ -28,7 +28,12 @@ Also available as `af` alias.
 
 ## Authentication
 
-Your API token is stored in your OS credential manager (macOS Keychain, Windows Credential Manager, Linux Secret Service). Get a Personal Access Token at [appfigures.com/developers/keys](https://appfigures.com/developers/keys).
+Run `af auth login` in an interactive terminal to sign in. Two ways:
+
+- **Browser** (default): opens your browser, approve, paste the code shown back into the CLI. The resulting token is stored in your OS credential manager (macOS Keychain, Windows Credential Manager, Linux Secret Service).
+- **Personal access token**: pick "Personal access token" at the prompt for instructions. Create a token at [appfigures.com/developers/keys](https://appfigures.com/developers/keys), then `export APPFIGURES_API_KEY=<your-token>`.
+
+For CI or any non-interactive context, `af auth login` will not run — set `APPFIGURES_API_KEY` in the environment instead.
 
 ## Support
 

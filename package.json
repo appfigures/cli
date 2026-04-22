@@ -1,6 +1,6 @@
 {
   "name": "@appfigures/cli",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "description": "Appfigures CLI — query app metrics, reviews, and store data from your terminal",
   "type": "module",
   "bin": {
@@ -30,6 +30,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@napi-rs/keyring": "1.2.0"
+    "@napi-rs/keyring": "1.2.0",
+    "yoctocolors": "^2.1.2"
   }
 }
