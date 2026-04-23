@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0-beta.0] — 2026-04-23
+
+### Added
+
+- **Pagination** — `--count` / `--page` on `apps mine`, `store featured`, `store app-ranks`, `keywords results`.
+- **`metrics query --all-time`**.
+
+### Changed
+
+- **Reference commands renamed** under `catalog` and `metrics`.
+- **List responses now include pagination info** on `apps mine`, `store featured`, `store app-ranks`, `keywords results`.
+- **`metrics query`** output is tidier — top results first, incomplete recent dates are called out, and dates no longer shift with your timezone.
+- **`catalog find`** returns more relevant results when you query `custom_meta.*` fields.
+
+### Fixed
+
+- **`metrics query`** with only `--end` no longer inverts the date range.
+
 ## [1.0.0-alpha.5] — 2026-04-22
 
 ### Added
