@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.0-beta.1] — 2026-04-23
+
+### Fixed
+
+- **`auth logout`** no longer hangs if the server revoke is slow.
+
+### Docs
+
+- README: npm badge and “Built for agents” section.
+
 ## [1.0.0-beta.0] — 2026-04-23
 
 ### Added

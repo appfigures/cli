@@ -1,5 +1,7 @@
 # @appfigures/cli
 
+[![npm](https://img.shields.io/npm/v/@appfigures/cli.svg)](https://www.npmjs.com/package/@appfigures/cli)
+
 The Appfigures CLI — query app metrics, reviews, and store data from your terminal.
 
 Try it now without installing:
@@ -16,6 +18,16 @@ npm install -g @appfigures/cli
 ```
 
 Requires Node.js 22+. Works with pnpm and yarn too.
+
+## Built for agents
+
+Designed to be driven by LLM agents as much as by humans.
+
+- **JSON on stdout, everything else on stderr.** Every command emits a single JSON value on stdout — `jq`-ready, no interleaved logs, hints, or update notices.
+- **Auto-detected agent mode.** When stdout isn't a TTY (piped, redirected, or captured by an agent harness) the CLI switches to non-interactive: no prompts, no spinners, and errors include an agent-directed `NOTE:` hint on stderr to steer the next action.
+- **Self-describing, offline.** `af catalog query-docs` and `af metrics dataset-docs` print the full query grammar and dataset catalog without hitting the API — plan queries without round-trips or stale training data.
+- **Unattended auth.** Set `APPFIGURES_API_KEY` in the environment; every command runs without a browser or prompt.
+- **Raw API escape hatch.** `af api <path>` proxies any endpoint the first-class commands don't cover.
 
 ## Quick start
 
