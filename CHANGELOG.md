@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.0-beta.2] — 2026-05-06
+
+### Changed
+
+- **Command parsing now uses Commander** — help, options, suggestions, and parse errors are more consistent across built-in and API-backed commands.
+- **Catalog query guidance is stricter and clearer** — malformed queries, nested filters, omitted fields, and invalid sort fields now produce more actionable recovery hints.
+- **Metrics query defaults are more agent-friendly** — boolean flags now default predictably when omitted.
+- **Store rank output is cleaner** — app rank and top chart rows now use normalized category labels and pagination metadata.
+
+### Fixed
+
+- **Text transport values round-trip safely** — encoded CLI argument values no longer lose structure when passed through command-line text.
+- **Update notifications recommend the stable install command** and avoid CI-related test/environment drift.
+- **Agent app date output is normalized** for more reliable downstream parsing.
+
 ## [1.0.0-beta.1] — 2026-04-23
 
 ### Fixed

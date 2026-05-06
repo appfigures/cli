@@ -1,6 +1,6 @@
 {
   "name": "@appfigures/cli",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Appfigures CLI — query app metrics, reviews, and store data from your terminal",
   "type": "module",
   "bin": {
@@ -18,6 +18,21 @@
     "node": ">=22"
   },
   "license": "Apache-2.0",
+  "author": "Appfigures",
+  "keywords": [
+    "appfigures",
+    "app-intelligence",
+    "cli",
+    "app-store",
+    "aso",
+    "analytics",
+    "reviews",
+    "ratings",
+    "estimates",
+    "mobile",
+    "ios",
+    "android"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/appfigures/cli.git"
@@ -31,6 +46,7 @@
   },
   "dependencies": {
     "@napi-rs/keyring": "1.2.0",
+    "semver": "^7.7.4",
     "yoctocolors": "^2.1.2"
   }
 }
