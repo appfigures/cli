@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-beta.3] — 2026-05-07
+
+### Fixed
+
+- **`af auth login` works in agent harnesses.**
+- **Improved `store app-ranks`, `store top-charts`, and `store app-listing`.**
+
 ## [1.0.0-beta.2] — 2026-05-06
 
 ### Changed
