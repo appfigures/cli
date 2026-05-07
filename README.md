@@ -43,7 +43,7 @@ Designed to be driven by LLM agents as much as by humans.
 
 - **JSON on stdout, everything else on stderr.** Every command emits a single JSON value on stdout — `jq`-ready, no interleaved logs, hints, or update notices.
 - **Auto-detected agent mode.** When stdout isn't a TTY (piped, redirected, or captured by an agent harness) the CLI switches to non-interactive: no prompts, no spinners, and errors include an agent-directed `NOTE:` hint on stderr to steer the next action.
-- **Self-describing, offline.** `af catalog query-docs` and `af metrics dataset-docs` print the full query grammar and dataset catalog without hitting the API — plan queries without round-trips or stale training data.
+- **Self-describing, offline.** `af docs get catalog_playbook` and `af docs get numeric_metrics` print the full query grammar and dataset catalog without hitting the API — plan queries without round-trips or stale training data.
 - **Unattended auth.** Set `APPFIGURES_API_KEY` in the environment; every command runs without a browser or prompt.
 - **Raw API escape hatch.** `af api <path>` proxies any endpoint the first-class commands don't cover.
 
@@ -57,19 +57,19 @@ Find and identify apps.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-apps-search"><code>af&nbsp;apps&nbsp;search</code></a> | Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings — pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`catalog find`](#command-catalog-find). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue. |
+| <a href="#command-apps-search"><code>af&nbsp;apps&nbsp;search</code></a> | Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings — pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`explorer query`](#command-explorer-query). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue. |
 | <a href="#command-apps-tracked"><code>af&nbsp;apps&nbsp;tracked</code></a> | List the apps your Appfigures account tracks. |
 | <a href="#command-apps-get"><code>af&nbsp;apps&nbsp;get</code></a> | Get an app's record — basic metadata (name, developer, etc) and, if the user tracks it, what data they can access. Pass a product ID for one storefront; unified app ID for all storefronts together. |
 
-### Catalog
+### Explorer
 
 Search and analyze the app catalog — 3M+ apps, 120+ queryable fields.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-catalog-find"><code>af&nbsp;catalog&nbsp;find</code></a> | Advanced search across the 3M-app catalog — filter and sort by any of 120+ fields (download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity). Uses a simple array query grammar. Run [`docs get catalog_playbook`](#command-docs-get) for the full field list or query syntax. |
-| <a href="#command-catalog-aggregate"><code>af&nbsp;catalog&nbsp;aggregate</code></a> | Advanced aggregation across the 3M-app catalog — counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`catalog find`](#command-catalog-find); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis. |
-| <a href="#command-catalog-fields"><code>af&nbsp;catalog&nbsp;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`catalog find`](#command-catalog-find) and [`catalog aggregate`](#command-catalog-aggregate) accept. |
+| <a href="#command-explorer-query"><code>af&nbsp;explorer&nbsp;query</code></a> | Advanced search across the 3M-app catalog — filter and sort by any of 120+ fields (download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity). Uses a simple array query grammar. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get). |
+| <a href="#command-explorer-aggregate"><code>af&nbsp;explorer&nbsp;aggregate</code></a> | Advanced aggregation across the 3M-app catalog — counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis. |
+| <a href="#command-explorer-fields"><code>af&nbsp;explorer&nbsp;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept. |
 
 ### Metrics
 
@@ -77,7 +77,7 @@ Query numeric datasets across dimensions.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-metrics-query"><code>af&nbsp;metrics&nbsp;query</code></a> | Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. Use `filterAppsBy*` options to narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership, some work for any app. |
+| <a href="#command-metrics-query"><code>af&nbsp;metrics&nbsp;query</code></a> | Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership, some work for any app. |
 
 ### Store
 
@@ -87,7 +87,7 @@ App store presence — listing content, category ranks, top charts, and featured
 | ------- | ----------- |
 | <a href="#command-store-app-ranks"><code>af&nbsp;store&nbsp;app&#8209;ranks</code></a> | Rank history for one or more apps across countries, device types, subtypes, and categories. Returns time-series positions and day-over-day deltas. |
 | <a href="#command-store-top-charts"><code>af&nbsp;store&nbsp;top&#8209;charts</code></a> | Top apps in a category chart — for a given country and category. Returns ranked entries with current positions and day-over-day deltas. |
-| <a href="#command-store-categories"><code>af&nbsp;store&nbsp;categories</code></a> | List every store category with its ID. Use to find the numeric category IDs that [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) require. |
+| <a href="#command-store-categories"><code>af&nbsp;store&nbsp;categories</code></a> | Lists every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here. |
 | <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | Featured and editorial placement history for an app. |
 | <a href="#command-store-app-listing"><code>af&nbsp;store&nbsp;app&#8209;listing</code></a> | Full store listing for one storefront — localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request. |
 
@@ -177,7 +177,7 @@ Every command with its full argument and flag list. For the one-line overview, s
 
 `af apps search <query> [flags]`
 
-Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings — pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`catalog find`](#command-catalog-find). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue.
+Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings — pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`explorer query`](#command-explorer-query). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue.
 
 **Options**
 
@@ -201,7 +201,7 @@ List the apps your Appfigures account tracks.
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number (1-indexed)
 - `--q` string. Substring match on app name.
-- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. If you can describe the apps you want with the other `filterAppsBy*` keys (storefront, source, type), use those instead.
+- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
 - `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
@@ -223,19 +223,19 @@ Get an app's record — basic metadata (name, developer, etc) and, if the user t
 
 ---
 
-<a id="catalog-find"></a>
-<a id="command-catalog-find"></a>
-### af catalog find
+<a id="explorer-query"></a>
+<a id="command-explorer-query"></a>
+### af explorer query
 
-`af catalog find [query] [flags]`
+`af explorer query [query] [flags]`
 
-Advanced search across the 3M-app catalog — filter and sort by any of 120+ fields (download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity). Uses a simple array query grammar. Run [`docs get catalog_playbook`](#command-docs-get) for the full field list or query syntax.
+Advanced search across the 3M-app catalog — filter and sort by any of 120+ fields (download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity). Uses a simple array query grammar. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 
 **Options**
 
-- `[query]` array. Explorer query in JSON array format to select matching catalog Products. Omit or pass `[]` to match every Product across every storefront. Use [`docs get catalog_playbook`](#command-docs-get) for the full field list or query syntax.
-- `--fields` string[]. Explorer field names. Use [`docs get catalog_playbook`](#command-docs-get) for the full field list.
-- `--sort` string. Explorer field name. Use [`docs get catalog_playbook`](#command-docs-get) for the full field list.
+- `[query]` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
+- `--fields` string[]. Explorer field names. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
+- `--sort` string. Explorer field name. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--order` string. Sort direction
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number (1-indexed)
@@ -243,29 +243,29 @@ Advanced search across the 3M-app catalog — filter and sort by any of 120+ fie
 
 ---
 
-<a id="catalog-aggregate"></a>
-<a id="command-catalog-aggregate"></a>
-### af catalog aggregate
+<a id="explorer-aggregate"></a>
+<a id="command-explorer-aggregate"></a>
+### af explorer aggregate
 
-`af catalog aggregate <fields> [flags]`
+`af explorer aggregate <fields> [flags]`
 
-Advanced aggregation across the 3M-app catalog — counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`catalog find`](#command-catalog-find); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis.
+Advanced aggregation across the 3M-app catalog — counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis.
 
 **Options**
 
-- `--query` array. Explorer query in JSON array format to select matching catalog Products. Omit or pass `[]` to match every Product across every storefront. Use [`docs get catalog_playbook`](#command-docs-get) for the full field list or query syntax.
-- `<fields>` required string[]. Field+aggregation pairs (e.g. `all_rating/stats`, `storefronts/terms`). Aggregations: `stats`, `terms`, `histogram`, `date_histogram`, `cardinality`. Use [`docs get catalog_playbook`](#command-docs-get) for the full field list.
+- `--query` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
+- `<fields>` required string[]. Field+aggregation pairs (e.g. `all_rating/stats`, `storefronts/terms`). Aggregations: `stats`, `terms`, `histogram`, `date_histogram`, `cardinality`. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--allow-unscoped-nested` boolean, default `false`. Escape hatch: only pass true after a query error says the unscoped nested semantics are intentional.
 
 ---
 
-<a id="catalog-fields"></a>
-<a id="command-catalog-fields"></a>
-### af catalog fields
+<a id="explorer-fields"></a>
+<a id="command-explorer-fields"></a>
+### af explorer fields
 
-`af catalog fields`
+`af explorer fields`
 
-List the catalog fields and the current user's access level for each. Same field set [`catalog find`](#command-catalog-find) and [`catalog aggregate`](#command-catalog-aggregate) accept.
+List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept.
 
 ---
 
@@ -275,19 +275,19 @@ List the catalog fields and the current user's access level for each. Same field
 
 `af metrics query <dataset> [flags]`
 
-Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. Use `filterAppsBy*` options to narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership, some work for any app.
+Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership, some work for any app.
 
 **Options**
 
-- `<dataset>` required string. Dataset to query (e.g. sales.combined_downloads). Run [`docs get numeric_metrics`](#command-docs-get) for the full list.
+- `<dataset>` required string. Dataset to query (e.g. sales.combined_downloads). The full list is documented in [`docs get numeric_metrics`](#command-docs-get).
 - `--group-by` string[]. Dimensions to group by. Max 2: the first slot becomes the outer entity type, the second the inner series.
 - `--granularity` string. Time granularity when grouping by date
 - `--include-total` boolean, default `false`. Return a single total alongside the breakdowns. Skips client-side summation for dashboard-style asks.
-- `--count` integer. Cap the number of rows returned. Omit to auto-paginate every page of paginated datasets — set this when you only need a preview and want to avoid pulling the full series.
+- `--count` integer. Cap the number of rows returned. Without this option, paginated datasets auto-paginate every page; a small count returns a preview instead of the full series.
 - `--countries` string[]. Filter to one or more ISO country codes (e.g. US, JP, GB)
 - `--device-type` string. Device type
 - `--all-time` boolean, default `false`. Opt in to the entire history. Without this flag (and without `start`/`end`), the query defaults to the last 30 days. Mutually exclusive with `start` and `end`.
-- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. If you can describe the apps you want with the other `filterAppsBy*` keys (storefront, source, type), use those instead.
+- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
 - `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
@@ -344,7 +344,7 @@ Top apps in a category chart — for a given country and category. Returns ranke
 
 `af store categories [flags]`
 
-List every store category with its ID. Use to find the numeric category IDs that [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) require.
+Lists every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here.
 
 **Options**
 
@@ -382,7 +382,7 @@ Full store listing for one storefront — localized text (name, subtitle, descri
 
 **Options**
 
-- `<product-id>` required integer. Numeric product ID for one storefront. Not a unified app ID. Use [`apps get '<unified-app-id>'`](#command-apps-get) to find member product_id values.
+- `<product-id>` required integer. Numeric product ID for one storefront. Not a unified app ID. Member product_id values are available from [`apps get '<unified-app-id>'`](#command-apps-get).
 - `--language` string. Locale (e.g. en, ja, zh-Hans) for name, subtitle, description, release notes, and screenshots. Defaults to en; falls back to the first available locale when the requested one has no metadata. The response echoes the resolved language.
 - `--device-type` string, default `handheld`. Relevant to Apple apps. Pick handheld for iPhone-specific metadata, tablet for iPad, desktop for Mac, etc.
 
@@ -402,7 +402,7 @@ Search and filter reviews for one or more apps by star rating, date range, count
 - `--language` string. Filter by language code (e.g. en, ja)
 - `--version` string. Filter by app version
 - `--country` string. ISO country code (e.g. US, JP, GB)
-- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. If you can describe the apps you want with the other `filterAppsBy*` keys (storefront, source, type), use those instead.
+- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
 - `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
@@ -422,7 +422,7 @@ Review volume breakdown for one or more apps, by star rating, date, or country.
 **Options**
 
 - `--country` string. ISO country code (e.g. US, JP, GB)
-- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. If you can describe the apps you want with the other `filterAppsBy*` keys (storefront, source, type), use those instead.
+- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
 - `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
@@ -585,15 +585,15 @@ Make a raw API request. See the API reference at https://docs.appfigures.com.
 
 Sign in to Appfigures
 
-Opens your browser to sign in, then prompts for the code Appfigures
-shows after approval. Requires an interactive terminal.
+Prints a URL to authorize this CLI. Open it, approve access, then re-run
+with `--code <code>` using the code shown after approval.
 
-For CI / agents without a user in the loop, set APPFIGURES_API_KEY
-in the environment instead — no browser flow needed.
+For unattended use (CI, scripts), set APPFIGURES_API_KEY in the
+environment instead — no browser flow needed.
 
 **Options**
 
-- `--code` string. Authorization code from the OAuth consent page. Skips the browser flow and the interactive code prompt — exchanges the code, saves the token, and exits. Used by agents that can relay a URL to the user, get the code back, and re-invoke the CLI.
+- `--code` string. Authorization code from the OAuth consent page. Second step of `af auth login` — exchanges the code, saves the token, exits.
 
 ---
 

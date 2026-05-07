@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0-beta.4] — 2026-05-07
+
+### Changed
+
+- **Catalog commands are now Explorer commands** across the CLI help, README, eval fixtures, and runtime guidance.
+- **`af auth login` help now matches the current browser-based flow.**
+- **Agent-facing help tips use consistent wording.**
+
 ## [1.0.0-beta.3] — 2026-05-07
 
 ### Fixed
