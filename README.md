@@ -67,7 +67,7 @@ Search and analyze the app catalog — 3M+ apps, 120+ queryable fields.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-explorer-query"><code>af&nbsp;explorer&nbsp;query</code></a> | Advanced search across the 3M-app catalog — filter and sort by any of 120+ fields (download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity). Uses a simple array query grammar. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get). |
+| <a href="#command-explorer-query"><code>af&nbsp;explorer&nbsp;query</code></a> | Read catalog fields for one app or many. Pass `["match","product_id",<id>]` for a single app; combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). 120+ fields available — download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity. Uses a simple array query grammar; full field list and syntax in [`docs get catalog_playbook`](#command-docs-get). |
 | <a href="#command-explorer-aggregate"><code>af&nbsp;explorer&nbsp;aggregate</code></a> | Advanced aggregation across the 3M-app catalog — counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis. |
 | <a href="#command-explorer-fields"><code>af&nbsp;explorer&nbsp;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept. |
 
@@ -88,7 +88,7 @@ App store presence — listing content, category ranks, top charts, and featured
 | <a href="#command-store-app-ranks"><code>af&nbsp;store&nbsp;app&#8209;ranks</code></a> | Rank history for one or more apps across countries, device types, subtypes, and categories. Returns time-series positions and day-over-day deltas. |
 | <a href="#command-store-top-charts"><code>af&nbsp;store&nbsp;top&#8209;charts</code></a> | Top apps in a category chart — for a given country and category. Returns ranked entries with current positions and day-over-day deltas. |
 | <a href="#command-store-categories"><code>af&nbsp;store&nbsp;categories</code></a> | Lists every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here. |
-| <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | Featured and editorial placement history for an app. |
+| <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | Featured and editorial placement history for an app or storefront product. Pass `--count=0` for summary stats only. |
 | <a href="#command-store-app-listing"><code>af&nbsp;store&nbsp;app&#8209;listing</code></a> | Full store listing for one storefront — localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request. |
 
 ### Reviews
@@ -200,7 +200,7 @@ List the apps your Appfigures account tracks.
 
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number (1-indexed)
-- `--q` string. Substring match on app name.
+- `--q` string. App name to filter by.
 - `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
@@ -229,14 +229,14 @@ Get an app's record — basic metadata (name, developer, etc) and, if the user t
 
 `af explorer query [query] [flags]`
 
-Advanced search across the 3M-app catalog — filter and sort by any of 120+ fields (download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity). Uses a simple array query grammar. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
+Read catalog fields for one app or many. Pass `["match","product_id",<id>]` for a single app; combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). 120+ fields available — download/revenue estimates, SDK presence, demographics, ratings, ranks, pricing, release dates, ad activity. Uses a simple array query grammar; full field list and syntax in [`docs get catalog_playbook`](#command-docs-get).
 
 **Options**
 
 - `[query]` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--fields` string[]. Explorer field names. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--sort` string. Explorer field name. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
-- `--order` string. Sort direction
+- `--order` string, default `desc`. Sort direction.
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number (1-indexed)
 - `--allow-unscoped-nested` boolean, default `false`. Escape hatch: only pass true after a query error says the unscoped nested semantics are intentional.
@@ -360,11 +360,16 @@ Lists every store category with its ID. Numeric category IDs required by [`store
 
 `af store featured <app-id> [flags]`
 
-Featured and editorial placement history for an app.
+Featured and editorial placement history for an app or storefront product. Pass `--count=0` for summary stats only.
 
 **Options**
 
 - `<app-id>` required integer or string. App identifier — unified app ID or product ID
+- `--countries` string[]. Countries to include. Pass multiple countries to compare markets; omit when using `--all-countries`.
+- `--all-countries` boolean, default `false`. Include every country by omitting the `--countries` filter. Worldwide coverage can be much larger.
+- `--include-rank-trend` boolean, default `false`. Include per-interval rank_trend for each placement.
+- `--sort` string, default `relevance`. Sort placements by relevance or date.
+- `--order` string, default `desc`. Sort direction.
 - `--start` string. Start date (YYYY-MM-DD)
 - `--end` string. End date (YYYY-MM-DD, defaults to today)
 - `--count` integer, default `10`. Number of results to return
@@ -486,7 +491,7 @@ Apps ranking for a specific keyword in organic search results. Returns the ranke
 
 - `<keyword-name>` required string. Keyword to look up
 - `--country` string. ISO country code (e.g. US, JP, GB)
-- `--storefront` string. App store platform — e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage (and others the API may add)
+- `--storefront` string. App store platform — e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront
 - `--device-type` string. Device type
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number (1-indexed)
@@ -505,7 +510,7 @@ Find related and suggested keywords for ASO research.
 
 - `<keyword-name>` required string. Seed keyword to find related terms for
 - `--country` string. ISO country code (e.g. US, JP, GB)
-- `--storefront` string. App store platform — e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage (and others the API may add)
+- `--storefront` string. App store platform — e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront
 - `--device-type` string. Device type
 
 ---

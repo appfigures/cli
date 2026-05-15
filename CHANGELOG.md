@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.0-beta.5] — 2026-05-15
+
+### Added
+
+- **`store featured` adds country filtering, sorting, and rank trends.**
+- **`store featured --count=0`** returns summary stats only.
+
+### Changed
+
+- **`store featured` accepts a storefront product ID** in addition to a unified app ID.
+- **`explorer query` sorts descending by default.**
+- **`explorer` 400 responses include the API's error message** instead of swallowing it.
+
 ## [1.0.0-beta.4] — 2026-05-07
 
 ### Changed
