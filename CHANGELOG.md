@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.0-beta.6] — 2026-05-21
+
+### Breaking
+
+- **`explorer query --fields` is now `--extra-fields`.** Fields referenced by `query` or `sort` are always projected; this flag adds extras.
+- **`metrics query --include-total` is removed.** Totals are always returned.
+
+### Added
+
+- **`sdks list`** — look up canonical SDK ids and tags. Pass the id to `explorer query` to filter apps by SDK.
+
+### Fixed
+
+- **`keywords list`** `added_on` dates are returned as UTC.
+
 ## [1.0.0-beta.5] — 2026-05-15
 
 ### Added
