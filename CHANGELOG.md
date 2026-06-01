@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.0-beta.7] — 2026-06-01
+
+### Breaking
+
+- **`reviews reply` takes `--content` instead of `--body`.** Pass `--delete` to withdraw a posted response.
+- **`reviews list` and `reviews breakdown` rename `--country` to `--countries` and `--version` to `--versions`.** Both accept multiple values now. `reviews list` no longer has `--language`.
+- **`keywords results` now requires `--country` and `--storefront`.**
+- **`sdks list` drops `--tags`.** Filter SDKs by tag through `--q`.
+
+### Added
+
+- **`reviews list` gains keyword search, date-range filtering, and sorting.**
+- **`explorer fields` can search the field catalog by keyword.**
+- **`explorer aggregate --terms-count` caps how many buckets each `terms` aggregation returns.**
+- **`keywords related` is now paginated.**
+- **`keywords list --include-relationships` adds per-(product, country) tracking detail.**
+- **`store categories` can filter by parent category, storefront, and device type.**
+
+### Changed
+
+- **`metrics query --count` returns the top N by value when combined with `--group-by`** (earliest N when grouping by date). Previously it only capped rows.
+
 ## [1.0.0-beta.6] — 2026-05-21
 
 ### Breaking

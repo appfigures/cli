@@ -42,18 +42,51 @@ For CI or any non-interactive context, `af auth login` will not run — see [Env
 Designed to be driven by LLM agents as much as by humans.
 
 - **JSON on stdout, everything else on stderr.** Every command emits a single JSON value on stdout — `jq`-ready, no interleaved logs, hints, or update notices.
-- **Auto-detected agent mode.** When stdout isn't a TTY (piped, redirected, or captured by an agent harness) the CLI switches to non-interactive: no prompts, no spinners, and errors include an agent-directed `NOTE:` hint on stderr to steer the next action.
+- **Agent mode by default.** Compact JSON, agent-directed `NOTE:` hints on stderr, no prompts or spinners; pass `--human` for interactive use.
 - **Self-describing, offline.** `af docs get catalog_playbook` and `af docs get numeric_metrics` print the full query grammar and dataset catalog without hitting the API — plan queries without round-trips or stale training data.
 - **Unattended auth.** Set `APPFIGURES_API_KEY` in the environment; every command runs without a browser or prompt.
 - **Raw API escape hatch.** `af api <path>` proxies any endpoint the first-class commands don't cover.
 
+## MCP server
+
+`af mcp` runs a local [Model Context Protocol](https://modelcontextprotocol.io) server over stdio, exposing the CLI's app-intelligence commands as MCP tools. Point any MCP client (Claude Desktop, Cursor, and others) at it to let an agent query app metrics, reviews, and store data directly.
+
+Add it to your client's MCP config:
+
+```json
+{
+	"mcpServers": {
+		"appfigures": {
+			"command": "npx",
+			"args": ["-y", "@appfigures/cli", "mcp"]
+		}
+	}
+}
+```
+
+The server signs in with your stored credentials, so run `af auth login` once first. For a headless setup, pass a token through the client's `env` instead:
+
+```json
+{
+	"mcpServers": {
+		"appfigures": {
+			"command": "npx",
+			"args": ["-y", "@appfigures/cli", "mcp"],
+			"env": { "APPFIGURES_API_KEY": "<your-token>" }
+		}
+	}
+}
+```
+
+Installed the CLI globally instead of running it through npx? Use `"command": "af"` with `"args": ["mcp"]`.
+
 <!-- prettier-ignore-start -->
-<!-- BEGIN auto-generated COMMANDS — do not edit; run `pnpm generate-docs` to update -->
+<!-- BEGIN auto-generated COMMANDS -->
 ## Commands
 
 ### Apps
 
-Find and identify apps.
+Find apps and look up their identity. Other commands take the app IDs these return.
 
 | Command | Description |
 | ------- | ----------- |
@@ -63,13 +96,13 @@ Find and identify apps.
 
 ### Explorer
 
-Search and analyze the app catalog: 3M+ apps, 120+ queryable fields.
+Search and analyze the app catalog: 3M+ apps and 120+ fields spanning identity, storefront and country availability, categories, ratings, release dates, chart ranks, download and revenue estimates, SDK presence, demographics, and related apps.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-explorer-query"><code>af&nbsp;explorer&nbsp;query</code></a> | Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). 120+ fields available; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get). |
-| <a href="#command-explorer-aggregate"><code>af&nbsp;explorer&nbsp;aggregate</code></a> | Advanced aggregation across the 3M-app catalog: counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis. |
-| <a href="#command-explorer-fields"><code>af&nbsp;explorer&nbsp;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept. |
+| <a href="#command-explorer-query"><code>af&nbsp;explorer&nbsp;query</code></a> | Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). The 120+ fields span ranks, ratings, download and revenue estimates, SDKs, demographics, and more; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get). |
+| <a href="#command-explorer-aggregate"><code>af&nbsp;explorer&nbsp;aggregate</code></a> | Aggregate across the 3M-app catalog: counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis. |
+| <a href="#command-explorer-fields"><code>af&nbsp;explorer&nbsp;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept. Pass `--q` to search the catalog by keyword. |
 
 ### Metrics
 
@@ -77,7 +110,7 @@ Query numeric datasets across dimensions.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-metrics-query"><code>af&nbsp;metrics&nbsp;query</code></a> | Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership, some work for any app. |
+| <a href="#command-metrics-query"><code>af&nbsp;metrics&nbsp;query</code></a> | Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership; others work for any app (with the right plan). |
 
 ### Store
 
@@ -85,11 +118,11 @@ App store presence: listing content, category ranks, top charts, and featured pl
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-store-app-ranks"><code>af&nbsp;store&nbsp;app&#8209;ranks</code></a> | Rank history for one or more apps across countries, device types, category subtypes, and categories. Returns time-series positions and day-over-day deltas. |
-| <a href="#command-store-top-charts"><code>af&nbsp;store&nbsp;top&#8209;charts</code></a> | Top apps in a category chart, for a given country and category. Returns ranked entries with current positions and day-over-day deltas. |
-| <a href="#command-store-categories"><code>af&nbsp;store&nbsp;categories</code></a> | Lists every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here. |
-| <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | Featured and editorial placement history for an app or storefront product. Pass `--count=0` for summary stats only. |
-| <a href="#command-store-app-listing"><code>af&nbsp;store&nbsp;app&#8209;listing</code></a> | Full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request. |
+| <a href="#command-store-app-ranks"><code>af&nbsp;store&nbsp;app&#8209;ranks</code></a> | Trace rank history for one or more apps across countries, device types, category subtypes, and categories, as time-series positions with day-over-day deltas. |
+| <a href="#command-store-top-charts"><code>af&nbsp;store&nbsp;top&#8209;charts</code></a> | List the top apps in a category chart for a given country and category, with current positions and day-over-day deltas. |
+| <a href="#command-store-categories"><code>af&nbsp;store&nbsp;categories</code></a> | List every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here. |
+| <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | List featured and editorial placements for an app or storefront product. Pass `--count=0` for summary stats only. |
+| <a href="#command-store-app-listing"><code>af&nbsp;store&nbsp;app&#8209;listing</code></a> | Read the full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request. |
 
 ### Reviews
 
@@ -97,9 +130,9 @@ Search, summarize, and reply to iOS and Google Play app store reviews.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-reviews-list"><code>af&nbsp;reviews&nbsp;list</code></a> | Search and filter reviews for one or more apps by star rating, date range, country, language, and app version. |
-| <a href="#command-reviews-breakdown"><code>af&nbsp;reviews&nbsp;breakdown</code></a> | Review volume breakdown for one or more apps, by star rating, date, or country. |
-| <a href="#command-reviews-reply"><code>af&nbsp;reviews&nbsp;reply</code></a> | Reply to a specific review. |
+| <a href="#command-reviews-list"><code>af&nbsp;reviews&nbsp;list</code></a> | Read individual reviews for one or more apps. Returns review text, star rating, country, and app version. Filterable by star rating, date range, country, version, and tracking relationship. |
+| <a href="#command-reviews-breakdown"><code>af&nbsp;reviews&nbsp;breakdown</code></a> | Aggregate review counts for one or more apps, bucketed by dimension. Returns one count per dimension value, plus a global total across the matched set. |
+| <a href="#command-reviews-reply"><code>af&nbsp;reviews&nbsp;reply</code></a> | Post or withdraw a developer response on a specific review. Pass `content` to post; pass `delete: true` to withdraw a previously-posted response. Returns the resulting state (`published`/`pending` for a post, `removed`/`removal_pending` for a withdrawal) along with the submitting account. |
 
 ### Keywords
 
@@ -108,9 +141,9 @@ Organic keyword visibility and tracking.
 | Command | Description |
 | ------- | ----------- |
 | <a href="#command-keywords-list"><code>af&nbsp;keywords&nbsp;list</code></a> | List tracked keywords with their opaque IDs. |
-| <a href="#command-keywords-rankings"><code>af&nbsp;keywords&nbsp;rankings</code></a> | Current organic keyword rankings for one or more apps. Returns which keywords each app ranks for, with position, popularity, and competitiveness. Works for any app. |
-| <a href="#command-keywords-results"><code>af&nbsp;keywords&nbsp;results</code></a> | Apps ranking for a specific keyword in organic search results. Returns the ranked list of apps appearing for that keyword, with keyword popularity and competitiveness scores. |
-| <a href="#command-keywords-related"><code>af&nbsp;keywords&nbsp;related</code></a> | Find related and suggested keywords for ASO research. |
+| <a href="#command-keywords-rankings"><code>af&nbsp;keywords&nbsp;rankings</code></a> | Check the organic keywords one or more apps rank for, with position, popularity, and competitiveness. |
+| <a href="#command-keywords-results"><code>af&nbsp;keywords&nbsp;results</code></a> | List the apps ranking for a specific keyword in organic search, plus the keyword's own popularity and competitiveness scores. |
+| <a href="#command-keywords-related"><code>af&nbsp;keywords&nbsp;related</code></a> | Find keywords related to a seed term for ASO research. Useful for finding alternatives with a similar audience that are more popular or less competitive. |
 
 ### Apple Ads
 
@@ -118,30 +151,36 @@ Apple Search Ads intelligence.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-apple-ads-keywords"><code>af&nbsp;apple&#8209;ads&nbsp;keywords</code></a> | Paid keyword data for one or more apps. Which keywords each app has ad impressions for, with impression share and organic rank. |
-| <a href="#command-apple-ads-advertisers"><code>af&nbsp;apple&#8209;ads&nbsp;advertisers</code></a> | Apps advertising on a specific keyword, with impression share, organic rank, first/last seen dates, and lifetime data. |
+| <a href="#command-apple-ads-keywords"><code>af&nbsp;apple&#8209;ads&nbsp;keywords</code></a> | List the paid keywords one or more apps run ads on, with impression share and organic rank. |
+| <a href="#command-apple-ads-advertisers"><code>af&nbsp;apple&#8209;ads&nbsp;advertisers</code></a> | List the apps advertising on a specific keyword, with each advertiser's impression share, organic rank, and how long they've been bidding. |
 
 ### Sdks
 
-Canonical SDK ids for the SDK universe Appfigures tracks.
+Look up canonical SDK IDs by name across the SDKs Appfigures tracks. The IDs are the values [`explorer query`](#command-explorer-query) accepts as SDK filters.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-sdks-list"><code>af&nbsp;sdks&nbsp;list</code></a> | Lists every known SDK with its canonical id. Use the canonical id to filter apps by SDK in [`explorer query`](#command-explorer-query). |
+| <a href="#command-sdks-list"><code>af&nbsp;sdks&nbsp;list</code></a> | List every known SDK with its id. Use the id to filter apps by SDK in [`explorer query`](#command-explorer-query). |
 
 ### Docs
 
-Reference docs for composing requests and interpreting responses.
+Reference docs and guides for specific actions and common tasks.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-docs-get"><code>af&nbsp;docs&nbsp;get</code></a> | Returns a reference doc by slug. |
+| <a href="#command-docs-get"><code>af&nbsp;docs&nbsp;get</code></a> | Return a reference doc or guide by slug. |
 
 ### API
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-api"><code>af&nbsp;api</code></a> | Make a raw API request. See the API reference at https://docs.appfigures.com. |
+| <a href="#command-api"><code>af&nbsp;api</code></a> | Make a raw API request for endpoints without a dedicated command. Endpoints, parameters, and response shapes are documented at https://docs.appfigures.com. |
+
+### MCP
+
+| Command | Description |
+| ------- | ----------- |
+| <a href="#command-mcp"><code>af&nbsp;mcp</code></a> | Run an MCP server over stdio for MCP clients like Claude Desktop and Cursor to call Appfigures tools. |
 
 ### Auth
 
@@ -178,7 +217,7 @@ Every command with its full argument and flag list. For the one-line overview, s
 **Output format.** Every command emits a single JSON value on stdout — pipe to `jq` for filtering. Informational messages, hints, and update notices go to stderr so pipelines stay clean.
 
 <!-- prettier-ignore-start -->
-<!-- BEGIN auto-generated API REFERENCE ENTRIES — do not edit; run `pnpm generate-docs` to update -->
+<!-- BEGIN auto-generated API REFERENCE ENTRIES -->
 <a id="apps-search"></a>
 <a id="command-apps-search"></a>
 ### af apps search
@@ -237,7 +276,7 @@ Get an app's record: basic metadata (name, developer, etc) and, if the user trac
 
 `af explorer query [query] [flags]`
 
-Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). 120+ fields available; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get).
+Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). The 120+ fields span ranks, ratings, download and revenue estimates, SDKs, demographics, and more; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get).
 
 **Options**
 
@@ -247,7 +286,7 @@ Read catalog fields for one app or many. Fields referenced by `query` or `sort` 
 - `--order` string, default `desc`. Sort direction.
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--allow-unscoped-nested` boolean, default `false`. Escape hatch: only pass true after a query error says the unscoped nested semantics are intentional.
+- `--allow-unscoped-nested` boolean, default `false`. Escape hatch for intentionally broad queries. Bypasses the default block on unscoped nested predicates that usually inflate results.
 
 ---
 
@@ -257,13 +296,14 @@ Read catalog fields for one app or many. Fields referenced by `query` or `sort` 
 
 `af explorer aggregate <fields> [flags]`
 
-Advanced aggregation across the 3M-app catalog: counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis.
+Aggregate across the 3M-app catalog: counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis.
 
 **Options**
 
 - `--query` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 - `<fields>` required string[]. Field+aggregation pairs (e.g. `all_rating/stats`, `storefronts/terms`). Aggregations: `stats`, `terms`, `histogram`, `date_histogram`, `cardinality`. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
-- `--allow-unscoped-nested` boolean, default `false`. Escape hatch: only pass true after a query error says the unscoped nested semantics are intentional.
+- `--allow-unscoped-nested` boolean, default `false`. Escape hatch for intentionally broad queries. Bypasses the default block on unscoped nested predicates that usually inflate results.
+- `--terms-count` integer, default `20`. Maximum buckets returned for each `terms` aggregation. Other aggregation types ignore it.
 
 ---
 
@@ -271,9 +311,15 @@ Advanced aggregation across the 3M-app catalog: counts, averages, min/max, and h
 <a id="command-explorer-fields"></a>
 ### af explorer fields
 
-`af explorer fields`
+`af explorer fields [flags]`
 
-List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept.
+List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept. Pass `--q` to search the catalog by keyword.
+
+**Options**
+
+- `--count` integer, default `50`. Number of results to return
+- `--page` integer, default `1`. Page number.
+- `--q` string. Fuzzy string match on `path`, `title`, `description`, `type`.
 
 ---
 
@@ -283,14 +329,14 @@ List the catalog fields and the current user's access level for each. Same field
 
 `af metrics query <dataset> [flags]`
 
-Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership, some work for any app.
+Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership; others work for any app (with the right plan).
 
 **Options**
 
 - `<dataset>` required string. Dataset to query (e.g. sales.combined_downloads). The full list is documented in [`docs get numeric_metrics`](#command-docs-get).
 - `--group-by` string[]. Dimensions to group by. Max 2: the first slot becomes the outer entity type, the second the inner series.
 - `--granularity` string. Time granularity when grouping by date
-- `--count` integer. Cap the number of rows returned. Without this option, paginated datasets auto-paginate every page; a small count returns a preview instead of the full series.
+- `--count` integer. Row cap. With `--group-by`, top N of the outer entity type by value (earliest N when grouping by date). Without `--group-by`, single-page preview.
 - `--countries` string[]. Filter to one or more ISO country codes (e.g. US, JP, GB)
 - `--device-type` string. Device type
 - `--all-time` boolean, default `false`. Opt in to the entire history. Without this flag (and without `start`/`end`), the query defaults to the last 30 days. Mutually exclusive with `start` and `end`.
@@ -309,7 +355,7 @@ Query any numeric dataset for one or more apps. Optionally grouped by up to two 
 
 `af store app-ranks <app-ids> [flags]`
 
-Rank history for one or more apps across countries, device types, category subtypes, and categories. Returns time-series positions and day-over-day deltas.
+Trace rank history for one or more apps across countries, device types, category subtypes, and categories, as time-series positions with day-over-day deltas.
 
 **Options**
 
@@ -332,7 +378,7 @@ Rank history for one or more apps across countries, device types, category subty
 
 `af store top-charts [flags]`
 
-Top apps in a category chart, for a given country and category. Returns ranked entries with current positions and day-over-day deltas.
+List the top apps in a category chart for a given country and category, with current positions and day-over-day deltas.
 
 **Options**
 
@@ -351,15 +397,18 @@ Top apps in a category chart, for a given country and category. Returns ranked e
 
 `af store categories [flags]`
 
-Lists every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here.
+List every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here.
 
 **Options**
 
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `50`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--q` string. Text query for multi-field relevance match across the list.
+- `--q` string. Fuzzy string match on `name`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
 - `--id` integer[]. Only return these category IDs.
+- `--parent-id` integer. Only include subcategories of this parent category (drill-down by id).
+- `--storefront` string[]. Only include categories from these storefronts (e.g. `apple:ios`, `google_play`).
+- `--device-type` string[]. Only include categories for these device types (e.g. `handheld`, `tablet`).
 - `--all` boolean, default `false`. Include non-rank stores (roku, vizio, etc.). These have categories but no rank data.
 
 ---
@@ -370,13 +419,13 @@ Lists every store category with its ID. Numeric category IDs required by [`store
 
 `af store featured <app-id> [flags]`
 
-Featured and editorial placement history for an app or storefront product. Pass `--count=0` for summary stats only.
+List featured and editorial placements for an app or storefront product. Pass `--count=0` for summary stats only.
 
 **Options**
 
 - `<app-id>` required integer or string. App identifier. Unified app ID or product ID.
 - `--countries` string[]. Countries to include. Pass multiple countries to compare markets; omit when using `--all-countries`.
-- `--all-countries` boolean, default `false`. Include every country by omitting the `--countries` filter. Worldwide coverage can be much larger.
+- `--all-countries` boolean, default `false`. Include every country by omitting the `--countries` filter.
 - `--include-rank-trend` boolean, default `false`. Include per-interval rank_trend for each placement.
 - `--sort` string, default `relevance`. Sort placements by relevance or date.
 - `--order` string, default `desc`. Sort direction.
@@ -393,7 +442,7 @@ Featured and editorial placement history for an app or storefront product. Pass 
 
 `af store app-listing <product-id> [flags]`
 
-Full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request.
+Read the full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request.
 
 **Options**
 
@@ -409,20 +458,24 @@ Full store listing for one storefront: localized text (name, subtitle, descripti
 
 `af reviews list [flags]`
 
-Search and filter reviews for one or more apps by star rating, date range, country, language, and app version.
+Read individual reviews for one or more apps. Returns review text, star rating, country, and app version. Filterable by star rating, date range, country, version, and tracking relationship.
 
 **Options**
 
-- `--stars` number[]. Filter by star rating
-- `--language` string. Filter by language code (e.g. en, ja)
-- `--version` string. Filter by app version
-- `--country` string. ISO country code (e.g. US, JP, GB)
+- `--stars` number[]. Filter by star rating.
+- `--versions` string[]. Filter by app version. Pass multiple to combine.
+- `--countries` string[]. Filter to one or more ISO country codes (e.g. US, JP, GB).
+- `--q` string. Search review title and body. Pass multiple keywords to match any. Case-insensitive; combines with other filters.
+- `--sort` string. Sort by review date or star rating.
+- `--order` string, default `desc`. Sort direction.
 - `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
 - `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
+- `--start` string. Start date (YYYY-MM-DD)
+- `--end` string. End date (YYYY-MM-DD, defaults to today)
 - `--count` integer, default `10`. Number of results to return
-- `--page` integer, default `1`. Page number.
+- `--page` integer, default `1`. Page number. 1-500.
 
 ---
 
@@ -432,11 +485,14 @@ Search and filter reviews for one or more apps by star rating, date range, count
 
 `af reviews breakdown [flags]`
 
-Review volume breakdown for one or more apps, by star rating, date, or country.
+Aggregate review counts for one or more apps, bucketed by dimension. Returns one count per dimension value, plus a global total across the matched set.
 
 **Options**
 
-- `--country` string. ISO country code (e.g. US, JP, GB)
+- `--stars` number[]. Filter by star rating.
+- `--versions` string[]. Filter by app version. Pass multiple to combine.
+- `--countries` string[]. Filter to one or more ISO country codes (e.g. US, JP, GB).
+- `--q` string. Search review title and body. Pass multiple keywords to match any. Case-insensitive; combines with other filters.
 - `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
@@ -452,12 +508,13 @@ Review volume breakdown for one or more apps, by star rating, date, or country.
 
 `af reviews reply <review-id> [flags]`
 
-Reply to a specific review.
+Post or withdraw a developer response on a specific review. Pass `content` to post; pass `delete: true` to withdraw a previously-posted response. Returns the resulting state (`published`/`pending` for a post, `removed`/`removal_pending` for a withdrawal) along with the submitting account.
 
 **Options**
 
-- `<review-id>` required string. Review ID to reply to
-- `--body` required string. Reply text
+- `<review-id>` required string. Review to act on. Use `review_id` from [`reviews list`](#command-reviews-list).
+- `--content` string. Response text the developer wants to publish.
+- `--delete` boolean. Withdraw the previously-posted response on this review. Mutually exclusive with `content`.
 
 ---
 
@@ -473,8 +530,9 @@ List tracked keywords with their opaque IDs.
 
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--q` string. Text query for multi-field relevance match across the list.
+- `--q` string. Fuzzy string match on `keyword_term`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
+- `--include-relationships` boolean, default `false`. Include per-(product, country) tracking detail and sync state on each row. Off by default; adds a nested block per tracked (product, country) pair.
 
 ---
 
@@ -484,14 +542,14 @@ List tracked keywords with their opaque IDs.
 
 `af keywords rankings [flags]`
 
-Current organic keyword rankings for one or more apps. Returns which keywords each app ranks for, with position, popularity, and competitiveness. Works for any app.
+Check the organic keywords one or more apps rank for, with position, popularity, and competitiveness.
 
 **Options**
 
 - `--product-ids` integer[]. Product identifiers (numeric, one storefront each).
 - `--country` required string. ISO country code (e.g. US, JP, GB)
 - `--device-type` string. Device type
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return (min 10).
 - `--page` integer, default `1`. Page number.
 
 ---
@@ -502,13 +560,13 @@ Current organic keyword rankings for one or more apps. Returns which keywords ea
 
 `af keywords results <keyword-name> [flags]`
 
-Apps ranking for a specific keyword in organic search results. Returns the ranked list of apps appearing for that keyword, with keyword popularity and competitiveness scores.
+List the apps ranking for a specific keyword in organic search, plus the keyword's own popularity and competitiveness scores.
 
 **Options**
 
-- `<keyword-name>` required string. Keyword to look up
-- `--country` string. ISO country code (e.g. US, JP, GB)
-- `--storefront` string. App store platform (e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront).
+- `<keyword-name>` required string. Keyword to look up.
+- `--country` required string. ISO country code (e.g. US, JP, GB)
+- `--storefront` required string. App store platform (e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront).
 - `--device-type` string. Device type
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number.
@@ -521,14 +579,16 @@ Apps ranking for a specific keyword in organic search results. Returns the ranke
 
 `af keywords related <keyword-name> [flags]`
 
-Find related and suggested keywords for ASO research.
+Find keywords related to a seed term for ASO research. Useful for finding alternatives with a similar audience that are more popular or less competitive.
 
 **Options**
 
-- `<keyword-name>` required string. Seed keyword to find related terms for
+- `<keyword-name>` required string. Seed keyword to find related terms for.
 - `--country` string. ISO country code (e.g. US, JP, GB)
 - `--storefront` string. App store platform (e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront).
 - `--device-type` string. Device type
+- `--count` integer, default `10`. Number of results to return
+- `--page` integer, default `1`. Page number.
 
 ---
 
@@ -538,7 +598,7 @@ Find related and suggested keywords for ASO research.
 
 `af apple-ads keywords <product-ids> [flags]`
 
-Paid keyword data for one or more apps. Which keywords each app has ad impressions for, with impression share and organic rank.
+List the paid keywords one or more apps run ads on, with impression share and organic rank.
 
 **Options**
 
@@ -546,7 +606,7 @@ Paid keyword data for one or more apps. Which keywords each app has ad impressio
 - `--days` integer, default `180`. Lookback period in days. Common values: 7, 14, 30, 90, 180, 365.
 - `--country` string. ISO country code (e.g. US, JP, GB)
 - `--device-type` string. Device type
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return (min 10).
 - `--page` integer, default `1`. Page number.
 
 ---
@@ -557,7 +617,7 @@ Paid keyword data for one or more apps. Which keywords each app has ad impressio
 
 `af apple-ads advertisers <keyword-name> [flags]`
 
-Apps advertising on a specific keyword, with impression share, organic rank, first/last seen dates, and lifetime data.
+List the apps advertising on a specific keyword, with each advertiser's impression share, organic rank, and how long they've been bidding.
 
 **Options**
 
@@ -576,16 +636,15 @@ Apps advertising on a specific keyword, with impression share, organic rank, fir
 
 `af sdks list [flags]`
 
-Lists every known SDK with its canonical id. Use the canonical id to filter apps by SDK in [`explorer query`](#command-explorer-query).
+List every known SDK with its id. Use the id to filter apps by SDK in [`explorer query`](#command-explorer-query).
 
 **Options**
 
 - `--count` integer, default `50`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--q` string. Text query for multi-field relevance match across the list.
+- `--q` string. Fuzzy string match on `name`, `description`, `tags`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
 - `--id` string[]. Only return these SDK ids.
-- `--tags` string[]. Only include SDKs carrying any of these tag ids.
 - `--include-inactive` boolean, default `false`. Include inactive SDKs. Rare; most callers want active only.
 
 ---
@@ -596,7 +655,7 @@ Lists every known SDK with its canonical id. Use the canonical id to filter apps
 
 `af docs get <slug>`
 
-Returns a reference doc by slug.
+Return a reference doc or guide by slug.
 
 **Options**
 
@@ -609,13 +668,22 @@ Returns a reference doc by slug.
 
 `af api <path> [flags]`
 
-Make a raw API request. See the API reference at https://docs.appfigures.com.
+Make a raw API request for endpoints without a dedicated command. Endpoints, parameters, and response shapes are documented at https://docs.appfigures.com.
 
 **Options**
 
 - `<path>` required string. API path (e.g. /users, /products)
 - `--method` string, default `GET`. HTTP method (one of: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS)
 - `--body` string. Request body (JSON string)
+
+---
+
+<a id="command-mcp"></a>
+### af mcp
+
+`af mcp`
+
+Run an MCP server over stdio for MCP clients like Claude Desktop and Cursor to call Appfigures tools.
 
 ---
 
