@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.0-beta.8] — 2026-06-03
+
+### Breaking
+
+- **Reworked the Explorer commands with clearer names and more consistent output.**
+
+### Added
+
+- **Run the CLI as an MCP server** so assistants like Claude and Cursor can use it.
+- **Control the calendar granularity when aggregating date data in Explorer.**
+- **Focus review breakdowns on the dimensions and top results you care about.**
+
+### Fixed
+
+- **Improved handling of in-app purchases.**
+- **More reliable handling of tracked apps.**
+
 ## [1.0.0-beta.7] — 2026-06-01
 
 ### Breaking

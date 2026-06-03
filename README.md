@@ -90,19 +90,19 @@ Find apps and look up their identity. Other commands take the app IDs these retu
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-apps-search"><code>af&nbsp;apps&nbsp;search</code></a> | Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings; pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`explorer query`](#command-explorer-query). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue. |
+| <a href="#command-apps-search"><code>af&nbsp;apps&nbsp;search</code></a> | Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings; pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`explorer list-products`](#command-explorer-list-products). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue. |
 | <a href="#command-apps-tracked"><code>af&nbsp;apps&nbsp;tracked</code></a> | List the apps your Appfigures account tracks. |
 | <a href="#command-apps-get"><code>af&nbsp;apps&nbsp;get</code></a> | Get an app's record: basic metadata (name, developer, etc) and, if the user tracks it, what data they can access. Pass a product ID for one storefront; unified app ID for all storefronts together. |
 
 ### Explorer
 
-Search and analyze the app catalog: 3M+ apps and 120+ fields spanning identity, storefront and country availability, categories, ratings, release dates, chart ranks, download and revenue estimates, SDK presence, demographics, and related apps.
+Search and analyze the full app catalog: millions of products across Apple, Google Play, Amazon, and other major stores, with 120+ fields spanning identity, storefront and country availability, categories, ratings, release dates, chart ranks, download and revenue estimates, SDK presence, demographics, and related apps.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-explorer-query"><code>af&nbsp;explorer&nbsp;query</code></a> | Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). The 120+ fields span ranks, ratings, download and revenue estimates, SDKs, demographics, and more; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get). |
-| <a href="#command-explorer-aggregate"><code>af&nbsp;explorer&nbsp;aggregate</code></a> | Aggregate across the 3M-app catalog: counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis. |
-| <a href="#command-explorer-fields"><code>af&nbsp;explorer&nbsp;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept. Pass `--q` to search the catalog by keyword. |
+| <a href="#command-explorer-list-products"><code>af&nbsp;explorer&nbsp;list&#8209;products</code></a> | Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). The 120+ fields span ranks, ratings, download and revenue estimates, SDKs, demographics, and more; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get). |
+| <a href="#command-explorer-aggregate-products"><code>af&nbsp;explorer&nbsp;aggregate&#8209;products</code></a> | Aggregate across the full catalog of millions of products across Apple, Google Play, Amazon, and other major stores: counts, averages, min/max, and histograms over any set of matching products. Uses the same query grammar as [`explorer list-products`](#command-explorer-list-products); returns aggregates, not product records. For market sizing, benchmarking, and segment analysis. |
+| <a href="#command-explorer-describe-fields"><code>af&nbsp;explorer&nbsp;describe&#8209;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`explorer list-products`](#command-explorer-list-products) and [`explorer aggregate-products`](#command-explorer-aggregate-products) accept. Pass `--q` to search the catalog by keyword. |
 
 ### Metrics
 
@@ -142,25 +142,14 @@ Organic keyword visibility and tracking.
 | ------- | ----------- |
 | <a href="#command-keywords-list"><code>af&nbsp;keywords&nbsp;list</code></a> | List tracked keywords with their opaque IDs. |
 | <a href="#command-keywords-rankings"><code>af&nbsp;keywords&nbsp;rankings</code></a> | Check the organic keywords one or more apps rank for, with position, popularity, and competitiveness. |
-| <a href="#command-keywords-results"><code>af&nbsp;keywords&nbsp;results</code></a> | List the apps ranking for a specific keyword in organic search, plus the keyword's own popularity and competitiveness scores. |
-| <a href="#command-keywords-related"><code>af&nbsp;keywords&nbsp;related</code></a> | Find keywords related to a seed term for ASO research. Useful for finding alternatives with a similar audience that are more popular or less competitive. |
-
-### Apple Ads
-
-Apple Search Ads intelligence.
-
-| Command | Description |
-| ------- | ----------- |
-| <a href="#command-apple-ads-keywords"><code>af&nbsp;apple&#8209;ads&nbsp;keywords</code></a> | List the paid keywords one or more apps run ads on, with impression share and organic rank. |
-| <a href="#command-apple-ads-advertisers"><code>af&nbsp;apple&#8209;ads&nbsp;advertisers</code></a> | List the apps advertising on a specific keyword, with each advertiser's impression share, organic rank, and how long they've been bidding. |
 
 ### Sdks
 
-Look up canonical SDK IDs by name across the SDKs Appfigures tracks. The IDs are the values [`explorer query`](#command-explorer-query) accepts as SDK filters.
+Look up the SDKs we track.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-sdks-list"><code>af&nbsp;sdks&nbsp;list</code></a> | List every known SDK with its id. Use the id to filter apps by SDK in [`explorer query`](#command-explorer-query). |
+| <a href="#command-sdks-list"><code>af&nbsp;sdks&nbsp;list</code></a> | List every known SDK with its id, or search to find a specific one. |
 
 ### Docs
 
@@ -224,7 +213,7 @@ Every command with its full argument and flag list. For the one-line overview, s
 
 `af apps search <query> [flags]`
 
-Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings; pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`explorer query`](#command-explorer-query). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue.
+Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings; pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`explorer list-products`](#command-explorer-list-products). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue.
 
 **Options**
 
@@ -270,17 +259,17 @@ Get an app's record: basic metadata (name, developer, etc) and, if the user trac
 
 ---
 
-<a id="explorer-query"></a>
-<a id="command-explorer-query"></a>
-### af explorer query
+<a id="explorer-list-products"></a>
+<a id="command-explorer-list-products"></a>
+### af explorer list-products
 
-`af explorer query [query] [flags]`
+`af explorer list-products [flags]`
 
 Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). The 120+ fields span ranks, ratings, download and revenue estimates, SDKs, demographics, and more; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get).
 
 **Options**
 
-- `[query]` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
+- `--query` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--extra-fields` string[]. Additional fields to include. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--sort` string. Explorer field name. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--order` string, default `desc`. Sort direction.
@@ -290,13 +279,13 @@ Read catalog fields for one app or many. Fields referenced by `query` or `sort` 
 
 ---
 
-<a id="explorer-aggregate"></a>
-<a id="command-explorer-aggregate"></a>
-### af explorer aggregate
+<a id="explorer-aggregate-products"></a>
+<a id="command-explorer-aggregate-products"></a>
+### af explorer aggregate-products
 
-`af explorer aggregate <fields> [flags]`
+`af explorer aggregate-products <fields> [flags]`
 
-Aggregate across the 3M-app catalog: counts, averages, min/max, and histograms over any set of matching apps. Uses the same bespoke JSON query grammar as [`explorer query`](#command-explorer-query); returns aggregates, not app records. For market sizing, benchmarking, and segment analysis.
+Aggregate across the full catalog of millions of products across Apple, Google Play, Amazon, and other major stores: counts, averages, min/max, and histograms over any set of matching products. Uses the same query grammar as [`explorer list-products`](#command-explorer-list-products); returns aggregates, not product records. For market sizing, benchmarking, and segment analysis.
 
 **Options**
 
@@ -304,22 +293,23 @@ Aggregate across the 3M-app catalog: counts, averages, min/max, and histograms o
 - `<fields>` required string[]. Field+aggregation pairs (e.g. `all_rating/stats`, `storefronts/terms`). Aggregations: `stats`, `terms`, `histogram`, `date_histogram`, `cardinality`. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--allow-unscoped-nested` boolean, default `false`. Escape hatch for intentionally broad queries. Bypasses the default block on unscoped nested predicates that usually inflate results.
 - `--terms-count` integer, default `20`. Maximum buckets returned for each `terms` aggregation. Other aggregation types ignore it.
+- `--date-histogram-interval` string. Bucket granularity for each `date_histogram` aggregation. Other aggregation types ignore it.
 
 ---
 
-<a id="explorer-fields"></a>
-<a id="command-explorer-fields"></a>
-### af explorer fields
+<a id="explorer-describe-fields"></a>
+<a id="command-explorer-describe-fields"></a>
+### af explorer describe-fields
 
-`af explorer fields [flags]`
+`af explorer describe-fields [flags]`
 
-List the catalog fields and the current user's access level for each. Same field set [`explorer query`](#command-explorer-query) and [`explorer aggregate`](#command-explorer-aggregate) accept. Pass `--q` to search the catalog by keyword.
+List the catalog fields and the current user's access level for each. Same field set [`explorer list-products`](#command-explorer-list-products) and [`explorer aggregate-products`](#command-explorer-aggregate-products) accept. Pass `--q` to search the catalog by keyword.
 
 **Options**
 
 - `--count` integer, default `50`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--q` string. Fuzzy string match on `path`, `title`, `description`, `type`.
+- `--q` string. Filter by `path`, `title`, `description`, `type`.
 
 ---
 
@@ -403,7 +393,7 @@ List every store category with its ID. Numeric category IDs required by [`store 
 
 - `--count` integer, default `50`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--q` string. Fuzzy string match on `name`.
+- `--q` string. Filter by `name`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
 - `--id` integer[]. Only return these category IDs.
 - `--parent-id` integer. Only include subcategories of this parent category (drill-down by id).
@@ -499,6 +489,8 @@ Aggregate review counts for one or more apps, bucketed by dimension. Returns one
 - `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
 - `--start` string. Start date (YYYY-MM-DD)
 - `--end` string. End date (YYYY-MM-DD, defaults to today)
+- `--by` string[]. Limit the response to these dimensions; omit to return all.
+- `--top` integer, default `20`. Maximum values returned per dimension; the rest are summed under `__other__`.
 
 ---
 
@@ -530,7 +522,7 @@ List tracked keywords with their opaque IDs.
 
 - `--count` integer, default `10`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--q` string. Fuzzy string match on `keyword_term`.
+- `--q` string. Filter by `keyword_term`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
 - `--include-relationships` boolean, default `false`. Include per-(product, country) tracking detail and sync state on each row. Off by default; adds a nested block per tracked (product, country) pair.
 
@@ -554,95 +546,19 @@ Check the organic keywords one or more apps rank for, with position, popularity,
 
 ---
 
-<a id="keywords-results"></a>
-<a id="command-keywords-results"></a>
-### af keywords results
-
-`af keywords results <keyword-name> [flags]`
-
-List the apps ranking for a specific keyword in organic search, plus the keyword's own popularity and competitiveness scores.
-
-**Options**
-
-- `<keyword-name>` required string. Keyword to look up.
-- `--country` required string. ISO country code (e.g. US, JP, GB)
-- `--storefront` required string. App store platform (e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront).
-- `--device-type` string. Device type
-- `--count` integer, default `10`. Number of results to return
-- `--page` integer, default `1`. Page number.
-
----
-
-<a id="keywords-related"></a>
-<a id="command-keywords-related"></a>
-### af keywords related
-
-`af keywords related <keyword-name> [flags]`
-
-Find keywords related to a seed term for ASO research. Useful for finding alternatives with a similar audience that are more popular or less competitive.
-
-**Options**
-
-- `<keyword-name>` required string. Seed keyword to find related terms for.
-- `--country` string. ISO country code (e.g. US, JP, GB)
-- `--storefront` string. App store platform (e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront).
-- `--device-type` string. Device type
-- `--count` integer, default `10`. Number of results to return
-- `--page` integer, default `1`. Page number.
-
----
-
-<a id="apple-ads-keywords"></a>
-<a id="command-apple-ads-keywords"></a>
-### af apple-ads keywords
-
-`af apple-ads keywords <product-ids> [flags]`
-
-List the paid keywords one or more apps run ads on, with impression share and organic rank.
-
-**Options**
-
-- `<product-ids>` required integer[]. Product identifiers (numeric, one storefront each).
-- `--days` integer, default `180`. Lookback period in days. Common values: 7, 14, 30, 90, 180, 365.
-- `--country` string. ISO country code (e.g. US, JP, GB)
-- `--device-type` string. Device type
-- `--count` integer, default `10`. Number of results to return (min 10).
-- `--page` integer, default `1`. Page number.
-
----
-
-<a id="apple-ads-advertisers"></a>
-<a id="command-apple-ads-advertisers"></a>
-### af apple-ads advertisers
-
-`af apple-ads advertisers <keyword-name> [flags]`
-
-List the apps advertising on a specific keyword, with each advertiser's impression share, organic rank, and how long they've been bidding.
-
-**Options**
-
-- `<keyword-name>` required string. Keyword to look up advertisers for
-- `--days` integer, default `180`. Lookback period in days. Common values: 7, 14, 30, 90, 180, 365.
-- `--country` string. ISO country code (e.g. US, JP, GB)
-- `--device-type` string. Device type
-- `--count` integer, default `10`. Number of results to return
-- `--page` integer, default `1`. Page number.
-
----
-
 <a id="sdks-list"></a>
 <a id="command-sdks-list"></a>
 ### af sdks list
 
 `af sdks list [flags]`
 
-List every known SDK with its id. Use the id to filter apps by SDK in [`explorer query`](#command-explorer-query).
+List every known SDK with its id, or search to find a specific one.
 
 **Options**
 
 - `--count` integer, default `50`. Number of results to return
 - `--page` integer, default `1`. Page number.
-- `--q` string. Fuzzy string match on `name`, `description`, `tags`.
+- `--q` string. Filter by `name`, `description`, `tags`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
 - `--id` string[]. Only return these SDK ids.
 - `--include-inactive` boolean, default `false`. Include inactive SDKs. Rare; most callers want active only.
