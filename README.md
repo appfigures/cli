@@ -1,6 +1,7 @@
 # @appfigures/cli
 
-[![npm](https://img.shields.io/npm/v/@appfigures/cli.svg)](https://www.npmjs.com/package/@appfigures/cli)
+[![npm version](https://img.shields.io/npm/v/@appfigures/cli)](https://www.npmjs.com/package/@appfigures/cli)
+[![MCP server](https://img.shields.io/badge/MCP-server-blue)](https://modelcontextprotocol.io)
 
 The Appfigures CLI — query app metrics, reviews, and store data from your terminal.
 

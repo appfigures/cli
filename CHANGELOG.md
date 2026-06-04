@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] — 2026-06-04
+
+### Fixed
+
+- **Smaller install.** The CLI no longer downloads dependencies it already bundles.
+
 ## [1.0.0] — 2026-06-04
 
 First stable release.
