@@ -1,10 +1,14 @@
 # Changelog
 
-## [1.0.2] — 2026-06-05
+## [1.0.3] — 2026-06-05
 
 ### Added
 
 - **The `af mcp` server is now listed in the official MCP registry.**
+
+## [1.0.2] — 2026-06-05
+
+Packaging and dependency-pinning changes only. No user-facing changes.
 
 ## [1.0.1] — 2026-06-04
 

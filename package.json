@@ -1,6 +1,7 @@
 {
   "name": "@appfigures/cli",
-  "version": "1.0.2",
+  "mcpName": "com.appfigures/mcp",
+  "version": "1.0.3",
   "description": "Appfigures CLI — query app metrics, reviews, and store data from your terminal",
   "type": "module",
   "bin": {
