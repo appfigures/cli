@@ -1,6 +1,6 @@
 {
   "name": "@appfigures/cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Appfigures CLI — query app metrics, reviews, and store data from your terminal",
   "type": "module",
   "bin": {
@@ -12,7 +12,8 @@
     "bin/appfigures",
     "README.md",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "server.json"
   ],
   "engines": {
     "node": ">=22",
