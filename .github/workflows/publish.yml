@@ -110,9 +110,28 @@ jobs:
             npm publish
           fi
 
-      # Publish the registry listing after npm publish (the entry references
-      # @appfigures/cli@<version>, which must exist on npm first).
-      # Bump MCP_PUBLISHER_VERSION/_SHA256 together from the release checksums.txt.
+      # Create the GitHub Release before the registry publish. npm publish (above) is irreversible
+      # and the release is the user-facing record of it; the MCP registry listing is a best-effort
+      # follow-on. Ordering release first means a registry hiccup leaves a complete npm + GitHub
+      # release, and a rerun skips both already-done steps (npm self-skips, release self-skips) and
+      # retries only the registry.
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eo pipefail
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            echo "Release ${GITHUB_REF_NAME} already exists; skipping"
+            exit 0
+          fi
+
+          VERSION="${GITHUB_REF_NAME#v}"
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "@appfigures/cli v${VERSION}" \
+            --notes-file release-notes.md
+
+      # Registry listing runs last. The entry references @appfigures/cli@<version>, which npm publish
+      # above already created. Bump MCP_PUBLISHER_VERSION/_SHA256 together from the release checksums.txt.
       - name: Install mcp-publisher
         env:
           MCP_PUBLISHER_VERSION: '1.7.9'
@@ -146,18 +165,3 @@ jobs:
             --private-key "$(openssl pkey -in key.pem -noout -text | grep -A3 'priv:' | tail -n +2 | tr -d ' :\n')"
           rm -f key.pem
           ./mcp-publisher publish
-
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -eo pipefail
-          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            echo "Release ${GITHUB_REF_NAME} already exists; skipping"
-            exit 0
-          fi
-
-          VERSION="${GITHUB_REF_NAME#v}"
-          gh release create "${GITHUB_REF_NAME}" \
-            --title "@appfigures/cli v${VERSION}" \
-            --notes-file release-notes.md
