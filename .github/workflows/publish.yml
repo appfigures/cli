@@ -51,6 +51,7 @@ jobs:
           	'bin/appfigures',
           	'dist/af.js',
           	'package.json',
+          	'server.json',
           ]
 
           if (JSON.stringify(files) !== JSON.stringify(expected)) {
@@ -107,6 +108,39 @@ jobs:
           else
             npm publish
           fi
+
+      # Publish the server.json listing to the official MCP registry, pointing at the npm
+      # package we just published. Runs after npm publish because the registry entry references
+      # @appfigures/cli@<version>, which must exist on npm first. Auth is DNS-based: we own the
+      # com.appfigures namespace via a TXT record on appfigures.com, and sign with the matching
+      # Ed25519 key held in the MCP_PRIVATE_KEY secret.
+      - name: Install mcp-publisher
+        run: |
+          set -eo pipefail
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Stamp release version into server.json
+        run: |
+          set -eo pipefail
+          VERSION="${GITHUB_REF_NAME#v}" node <<'NODE'
+          const fs = require('fs')
+          const version = process.env.VERSION
+          const server = JSON.parse(fs.readFileSync('server.json', 'utf8'))
+          server.version = version
+          server.packages[0].version = version
+          fs.writeFileSync('server.json', JSON.stringify(server, null, '\t') + '\n')
+          NODE
+
+      - name: Publish to MCP Registry
+        run: |
+          set -eo pipefail
+          # Store the PEM from the secret, derive the hex private key mcp-publisher expects, and
+          # remove the file immediately. Matches the documented DNS-auth flow.
+          printf '%s' "${{ secrets.MCP_PRIVATE_KEY }}" > key.pem
+          ./mcp-publisher login dns --domain appfigures.com \
+            --private-key "$(openssl pkey -in key.pem -noout -text | grep -A3 'priv:' | tail -n +2 | tr -d ' :\n')"
+          rm -f key.pem
+          ./mcp-publisher publish
 
       - name: Create GitHub Release
         env:
