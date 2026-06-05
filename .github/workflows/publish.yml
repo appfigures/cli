@@ -25,8 +25,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Use npm with Trusted Publishing support
-        # Pinned exact (not ^11.5.1) so the npm CLI version can't float between releases.
-        # 11.5.1 is the floor required for Trusted Publishing; bump deliberately.
+        # Pinned exact (>=11.5.1 required for Trusted Publishing); bump deliberately.
         run: npm install -g npm@11.16.0
 
       - name: Verify tag matches package.json version
@@ -111,14 +110,9 @@ jobs:
             npm publish
           fi
 
-      # Publish the server.json listing to the official MCP registry, pointing at the npm
-      # package we just published. Runs after npm publish because the registry entry references
-      # @appfigures/cli@<version>, which must exist on npm first. Auth is DNS-based: we own the
-      # com.appfigures namespace via a TXT record on appfigures.com, and sign with the matching
-      # Ed25519 key held in the MCP_REGISTRY_PRIVATE_KEY secret.
-      # Pinned to an exact mcp-publisher version + sha256, not `latest`: this binary runs with the
-      # registry signing key in scope, so its integrity matters. Runner is always ubuntu (linux
-      # amd64). Bump MCP_PUBLISHER_VERSION/_SHA256 together from the release's checksums.txt.
+      # Publish the registry listing after npm publish (the entry references
+      # @appfigures/cli@<version>, which must exist on npm first).
+      # Bump MCP_PUBLISHER_VERSION/_SHA256 together from the release checksums.txt.
       - name: Install mcp-publisher
         env:
           MCP_PUBLISHER_VERSION: '1.7.9'
@@ -146,8 +140,7 @@ jobs:
       - name: Publish to MCP Registry
         run: |
           set -eo pipefail
-          # Store the PEM from the secret, derive the hex private key mcp-publisher expects, and
-          # remove the file immediately. Matches the documented DNS-auth flow.
+          # Derive the hex key from the PEM secret; remove the file after.
           printf '%s' "${{ secrets.MCP_REGISTRY_PRIVATE_KEY }}" > key.pem
           ./mcp-publisher login dns --domain appfigures.com \
             --private-key "$(openssl pkey -in key.pem -noout -text | grep -A3 'priv:' | tail -n +2 | tr -d ' :\n')"
