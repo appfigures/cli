@@ -25,7 +25,9 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Use npm with Trusted Publishing support
-        run: npm install -g npm@^11.5.1
+        # Pinned exact (not ^11.5.1) so the npm CLI version can't float between releases.
+        # 11.5.1 is the floor required for Trusted Publishing; bump deliberately.
+        run: npm install -g npm@11.16.0
 
       - name: Verify tag matches package.json version
         run: |
