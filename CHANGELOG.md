@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.0.0] — 2026-08-08
+
+### Added
+
+- **Apple Search Ads reporting.** Inspect your campaigns, ad groups, keywords, and search terms. Report installs, spend, and cost-per-install per campaign and account-wide.
+- **Audience insights.** See an app's estimated age and gender breakdown, and the apps its users also use.
+- **Paid-keyword and advertiser intelligence.** See the paid keywords an app bids on, and which apps advertise on a given keyword.
+- **Keyword research.** Look up which apps rank for a keyword, and find related keywords for ASO.
+- **Keyword rank tracking.** Track and untrack keywords to monitor your app's rank and get alerts when it moves.
+- **Search the metrics dataset catalog.** Find datasets by keyword, or list them all with their value type and whether each is private data.
+
+### Fixed
+
+- **Listing tracked keywords with their tracking detail no longer crashes** when a keyword has no sync history yet.
+- **Searching within a command's results returns the most relevant matches first** instead of source order.
+
+### Breaking
+
+- **`keywords rankings` → `keywords organic`.** Its `--country` is now `--countries` and accepts several countries at once.
+- **`keywords list` → `keywords tracked`.**
+
 ## [1.0.3] — 2026-06-05
 
 ### Added

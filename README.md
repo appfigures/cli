@@ -91,7 +91,7 @@ Search and analyze the full app catalog: millions of products across Apple, Goog
 | ------- | ----------- |
 | <a href="#command-explorer-list-products"><code>af&nbsp;explorer&nbsp;list&#8209;products</code></a> | Read catalog fields for one app or many. Fields referenced by `query` or `sort` come back automatically; pass `--extra-fields` for more. Use `["match","product_id",<id>]` for a single app, or combine filters for population queries (e.g. iOS apps using Firebase with $1M+ US revenue). The 120+ fields span ranks, ratings, download and revenue estimates, SDKs, demographics, and more; query grammar and field list in [`docs get catalog_playbook`](#command-docs-get). |
 | <a href="#command-explorer-aggregate-products"><code>af&nbsp;explorer&nbsp;aggregate&#8209;products</code></a> | Aggregate across the full catalog of millions of products across Apple, Google Play, Amazon, and other major stores: counts, averages, min/max, and histograms over any set of matching products. Uses the same query grammar as [`explorer list-products`](#command-explorer-list-products); returns aggregates, not product records. For market sizing, benchmarking, and segment analysis. |
-| <a href="#command-explorer-describe-fields"><code>af&nbsp;explorer&nbsp;describe&#8209;fields</code></a> | List the catalog fields and the current user's access level for each. Same field set [`explorer list-products`](#command-explorer-list-products) and [`explorer aggregate-products`](#command-explorer-aggregate-products) accept. Pass `--q` to search the catalog by keyword. |
+| <a href="#command-explorer-describe-fields"><code>af&nbsp;explorer&nbsp;describe&#8209;fields</code></a> | List the catalog fields and the current user's access level for each. Search by keyword to find fields. Same field set [`explorer list-products`](#command-explorer-list-products) and [`explorer aggregate-products`](#command-explorer-aggregate-products) accept. |
 
 ### Metrics
 
@@ -99,7 +99,8 @@ Query numeric datasets across dimensions.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-metrics-query"><code>af&nbsp;metrics&nbsp;query</code></a> | Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership; others work for any app (with the right plan). |
+| <a href="#command-metrics-query"><code>af&nbsp;metrics&nbsp;query</code></a> | Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type); without one, a query covers every app the account tracks. |
+| <a href="#command-metrics-describe-datasets"><code>af&nbsp;metrics&nbsp;describe&#8209;datasets</code></a> | List every numeric dataset [`metrics query`](#command-metrics-query) accepts, one row per dataset with its value type and whether it's limited to your own apps. |
 
 ### Store
 
@@ -110,8 +111,17 @@ App store presence: listing content, category ranks, top charts, and featured pl
 | <a href="#command-store-app-ranks"><code>af&nbsp;store&nbsp;app&#8209;ranks</code></a> | Trace rank history for one or more apps across countries, device types, category subtypes, and categories, as time-series positions with day-over-day deltas. |
 | <a href="#command-store-top-charts"><code>af&nbsp;store&nbsp;top&#8209;charts</code></a> | List the top apps in a category chart for a given country and category, with current positions and day-over-day deltas. |
 | <a href="#command-store-categories"><code>af&nbsp;store&nbsp;categories</code></a> | List every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here. |
-| <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | List featured and editorial placements for an app or storefront product. Pass `--count=0` for summary stats only. |
+| <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | List featured and editorial placements for an app or storefront product. Request 0 rows for summary stats only. |
 | <a href="#command-store-app-listing"><code>af&nbsp;store&nbsp;app&#8209;listing</code></a> | Read the full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request. |
+
+### Audience
+
+Who an app's users are and what else they use. Covers estimated age and gender, plus audience overlap with other apps.
+
+| Command | Description |
+| ------- | ----------- |
+| <a href="#command-audience-demographics"><code>af&nbsp;audience&nbsp;demographics</code></a> | Read an app's audience demographics: the estimated age and gender breakdown. |
+| <a href="#command-audience-cross-usage"><code>af&nbsp;audience&nbsp;cross&#8209;usage</code></a> | Find the apps that an app's users also use. |
 
 ### Reviews
 
@@ -125,12 +135,32 @@ Search, summarize, and reply to iOS and Google Play app store reviews.
 
 ### Keywords
 
-Organic keyword visibility and tracking.
+Keyword visibility and rank tracking across organic search (App Store, Google Play) and Apple Ads.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-keywords-list"><code>af&nbsp;keywords&nbsp;list</code></a> | List tracked keywords with their opaque IDs. |
-| <a href="#command-keywords-rankings"><code>af&nbsp;keywords&nbsp;rankings</code></a> | Check the organic keywords one or more apps rank for, with position, popularity, and competitiveness. |
+| <a href="#command-keywords-organic"><code>af&nbsp;keywords&nbsp;organic</code></a> | Check the organic keywords one or more apps rank for, with position, popularity, and competitiveness. |
+| <a href="#command-keywords-paid"><code>af&nbsp;keywords&nbsp;paid</code></a> | List the paid keywords one or more apps run ads on, with impression share and organic rank. |
+| <a href="#command-keywords-ranking-apps"><code>af&nbsp;keywords&nbsp;ranking&#8209;apps</code></a> | List the apps ranking for a specific keyword in organic search, plus the keyword's own popularity and competitiveness scores. |
+| <a href="#command-keywords-advertisers"><code>af&nbsp;keywords&nbsp;advertisers</code></a> | List the apps advertising on a specific keyword, with each advertiser's impression share, organic rank, and how long they've been bidding. |
+| <a href="#command-keywords-related"><code>af&nbsp;keywords&nbsp;related</code></a> | Find keywords related to a seed term for ASO research. Useful for finding alternatives with a similar audience that are more popular or less competitive. |
+| <a href="#command-keywords-tracked"><code>af&nbsp;keywords&nbsp;tracked</code></a> | List tracked keywords with their opaque IDs. |
+| <a href="#command-keywords-track"><code>af&nbsp;keywords&nbsp;track</code></a> | Track a keyword to monitor your app's hourly rank for it over time and get automatic alerts when its position moves. |
+| <a href="#command-keywords-untrack"><code>af&nbsp;keywords&nbsp;untrack</code></a> | Stop tracking a keyword. |
+
+### Apple Ads
+
+Manage your Apple Ads campaigns, ad groups, keywords, and performance.
+
+| Command | Description |
+| ------- | ----------- |
+| <a href="#command-apple-ads-organizations"><code>af&nbsp;apple&#8209;ads&nbsp;organizations</code></a> | List the Apple Ads organizations you manage campaigns in, with each one's currency and timezone. |
+| <a href="#command-apple-ads-campaigns"><code>af&nbsp;apple&#8209;ads&nbsp;campaigns</code></a> | List your Apple Ads campaigns with each one's status, budget, targeted countries, and schedule. |
+| <a href="#command-apple-ads-ad-groups"><code>af&nbsp;apple&#8209;ads&nbsp;ad&#8209;groups</code></a> | List Apple Ads ad groups with each one's default bid, CPA cap, pricing model, and schedule. |
+| <a href="#command-apple-ads-keywords"><code>af&nbsp;apple&#8209;ads&nbsp;keywords</code></a> | List a campaign's bid keywords, with each keyword's match type, bid, and whether it's a targeting or negative term. |
+| <a href="#command-apple-ads-search-terms"><code>af&nbsp;apple&#8209;ads&nbsp;search&#8209;terms</code></a> | List the actual user search terms that triggered a campaign's ads. Use these to discover new keywords to bid on or exclude. |
+| <a href="#command-apple-ads-report"><code>af&nbsp;apple&#8209;ads&nbsp;report</code></a> | Report Apple Ads performance per campaign (impressions, taps, installs, spend, cost-per-install), plus an account-wide total, over a date range. |
+| <a href="#command-apple-ads-top-keywords"><code>af&nbsp;apple&#8209;ads&nbsp;top&#8209;keywords</code></a> | Rank a campaign's top-performing keywords by conversion rate, spend, and installs over a date range. Each list holds the top keywords on one metric. |
 
 ### Sdks
 
@@ -208,7 +238,7 @@ Find apps by name or publisher. Returns one row per unified app. Default returns
 
 - `<query>` required string. Search query (app name or publisher).
 - `--all-stores` boolean, default `false`. Include storefronts beyond Apple and Google: Amazon, Windows, Steam, Roku, LG TV, Samsung TV, and others.
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 
 **Examples**
@@ -236,7 +266,7 @@ List the apps your Appfigures account tracks.
 
 **Options**
 
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 - `--q` string. App name to filter by.
 - `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
@@ -278,7 +308,7 @@ Get an app's record: basic metadata (name, developer, etc) and, if the user trac
 
 **Options**
 
-- `<app-id>` required integer or string. App identifier. Unified app ID or product ID.
+- `<app-id>` required integer or string. The app's unified app ID or product ID.
 - `--all-stores` boolean, default `false`. For a unified app ID: include member products across all storefronts (Amazon, Steam, Windows, Roku, etc.). When false, `member_products` is restricted to storefronts with app-intelligence coverage (iOS + Google Play). Ignored for product IDs.
 
 **Examples**
@@ -304,10 +334,10 @@ Read catalog fields for one app or many. Fields referenced by `query` or `sort` 
 **Options**
 
 - `--query` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
-- `--extra-fields` string[]. Additional fields to include. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
+- `--extra-fields` string[]. Additional fields to include beyond those your `query` or `sort` already reference. Find field paths (and which you can read) with [`explorer describe-fields`](#command-explorer-describe-fields).
 - `--sort` string. Explorer field name. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--order` string, default `desc`. Sort direction.
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 - `--allow-unscoped-nested` boolean, default `false`. Escape hatch for intentionally broad queries. Bypasses the default block on unscoped nested predicates that usually inflate results.
 
@@ -342,8 +372,8 @@ Aggregate across the full catalog of millions of products across Apple, Google P
 
 **Options**
 
-- `--query` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 - `<fields>` required string[]. Field+aggregation pairs (e.g. `all_rating/stats`, `storefronts/terms`). Aggregations: `stats`, `terms`, `histogram`, `date_histogram`, `cardinality`. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
+- `--query` array. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--allow-unscoped-nested` boolean, default `false`. Escape hatch for intentionally broad queries. Bypasses the default block on unscoped nested predicates that usually inflate results.
 - `--terms-count` integer, default `20`. Maximum buckets returned for each `terms` aggregation. Other aggregation types ignore it.
 - `--date-histogram-interval` string. Bucket granularity for each `date_histogram` aggregation. Other aggregation types ignore it.
@@ -378,11 +408,11 @@ af explorer aggregate-products storefronts/terms
 
 `af explorer describe-fields [flags]`
 
-List the catalog fields and the current user's access level for each. Same field set [`explorer list-products`](#command-explorer-list-products) and [`explorer aggregate-products`](#command-explorer-aggregate-products) accept. Pass `--q` to search the catalog by keyword.
+List the catalog fields and the current user's access level for each. Search by keyword to find fields. Same field set [`explorer list-products`](#command-explorer-list-products) and [`explorer aggregate-products`](#command-explorer-aggregate-products) accept.
 
 **Options**
 
-- `--count` integer, default `50`. Number of results to return
+- `--count` integer, default `50`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 - `--q` string. Filter by `path`, `title`, `description`, `type`.
 
@@ -404,12 +434,12 @@ af explorer describe-fields
 
 `af metrics query <dataset> [flags]`
 
-Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type). Some datasets require app ownership; others work for any app (with the right plan).
+Query any numeric dataset for one or more apps. Optionally grouped by up to two dimensions, returned as a nested partition tree, not app records. Independently filterable by country, device type, and date range. `filterAppsBy*` options narrow the app set (by ID, storefront, source, or type); without one, a query covers every app the account tracks.
 
 **Options**
 
-- `<dataset>` required string. Dataset to query (e.g. sales.combined_downloads). The full list is documented in [`docs get numeric_metrics`](#command-docs-get).
-- `--group-by` string[]. Dimensions to group by. Max 2: the first slot becomes the outer entity type, the second the inner series.
+- `<dataset>` required string. Dataset to query (e.g. sales.combined_downloads). See [`metrics describe-datasets`](#command-metrics-describe-datasets) for the full list and which datasets are private data (visible only for apps you own or that were shared).
+- `--group-by` string[]. Dimensions to group by. Max 2: the first slot becomes the outer entity type, the second the inner series. Each dimension multiplies the result size.
 - `--granularity` string. Time granularity when grouping by date
 - `--count` integer. Row cap. With `--group-by`, top N of the outer entity type by value (earliest N when grouping by date). Without `--group-by`, single-page preview.
 - `--countries` string[]. Filter to one or more ISO country codes (e.g. US, JP, GB)
@@ -458,6 +488,35 @@ af metrics query reviews.total --filter-apps-by-id=ua_X7iNgb --group-by=country
 
 ---
 
+<a id="metrics-describe-datasets"></a>
+<a id="command-metrics-describe-datasets"></a>
+### af metrics describe-datasets
+
+`af metrics describe-datasets [flags]`
+
+List every numeric dataset [`metrics query`](#command-metrics-query) accepts, one row per dataset with its value type and whether it's limited to your own apps.
+
+**Options**
+
+- `--count` integer, default `50`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+- `--q` string. Filter by `dataset`, `value_type`, `label`, `description`.
+
+**Examples**
+
+```sh
+# Search by keyword (matches name, label, or description).
+af metrics describe-datasets --q='combined downloads'
+
+# Look up one dataset by its exact name.
+af metrics describe-datasets --q=sales.combined_downloads
+
+# List every dataset with its value type and whether it's limited to your own apps.
+af metrics describe-datasets
+```
+
+---
+
 <a id="store-app-ranks"></a>
 <a id="command-store-app-ranks"></a>
 ### af store app-ranks
@@ -471,12 +530,12 @@ Trace rank history for one or more apps across countries, device types, category
 - `<app-ids>` required (integer or string)[]. App identifiers (unified app IDs or product IDs)
 - `--countries` string[]. Country codes to query. Defaults to every country with rank coverage.
 - `--granularity` string, default `hourly`. Sampling rate. Hourly gives the freshest data; pass `--granularity=daily` for compact multi-day history.
-- `--device-types` string[], default `["handheld"]`. Filter response rows by device type.
-- `--subtypes` string[], default `["free"]`. Filter response rows by category subtype.
-- `--category-ids` integer[]. Filter response rows by category ID.
+- `--device-types` string[], default `["handheld"]`. Which device types to include; each ranks in its own chart. Add more to widen the response.
+- `--subtypes` string[], default `["free"]`. Which category subtypes to include; each ranks in its own chart. Add more to widen the response.
+- `--category-ids` integer[]. Filter response rows to specific category IDs; omit for all. Category IDs come from [`store categories`](#command-store-categories).
 - `--start` string. Start date (YYYY-MM-DD)
 - `--end` string. End date (YYYY-MM-DD, defaults to today)
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 
 **Examples**
@@ -494,8 +553,8 @@ af store app-ranks ua_miTXv6 --countries=US,GB,JP
 # Check Procreate's paid iPad chart ranks.
 af store app-ranks ua_CxA1MS --subtypes=paid --device-types=tablet --countries=US
 
-# Trace ChatGPT's chart history through May 2026.
-af store app-ranks ua_miTXv6 --granularity=daily --start=2026-05-01 --end=2026-05-31 --countries=US
+# Trace ChatGPT's chart history through December 2025.
+af store app-ranks ua_miTXv6 --granularity=daily --start=2025-12-01 --end=2025-12-31 --countries=US
 
 # Check ChatGPT's rank in one category (US iOS Productivity).
 af store app-ranks 336744124021 --category-ids=6007 --countries=US
@@ -514,10 +573,10 @@ List the top apps in a category chart for a given country and category, with cur
 **Options**
 
 - `--country` required string. ISO country code (e.g. US, JP, GB)
-- `--category-id` required integer. Store category ID
+- `--category-id` required integer. Category IDs come from [`store categories`](#command-store-categories).
 - `--subtype` string, default `free`. Category subtype (chart variant within the category).
 - `--date` string. Snapshot date (YYYY-MM-DD, defaults to current).
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 
 **Examples**
@@ -536,8 +595,8 @@ af store top-charts --country=JP --category-id=25204
 # List top free apps on Google Play in the US.
 af store top-charts --country=US --category-id=100
 
-# List top free apps on the US App Store in May 2026.
-af store top-charts --country=US --category-id=25204 --date=2026-05-01
+# List top free apps on the US App Store in December 2025.
+af store top-charts --country=US --category-id=25204 --date=2025-12-01
 ```
 
 ---
@@ -552,7 +611,7 @@ List every store category with its ID. Numeric category IDs required by [`store 
 
 **Options**
 
-- `--count` integer, default `50`. Number of results to return
+- `--count` integer, default `50`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 - `--q` string. Filter by `name`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
@@ -586,19 +645,19 @@ af store categories --all
 
 `af store featured <app-id> [flags]`
 
-List featured and editorial placements for an app or storefront product. Pass `--count=0` for summary stats only.
+List featured and editorial placements for an app or storefront product. Request 0 rows for summary stats only.
 
 **Options**
 
-- `<app-id>` required integer or string. App identifier. Unified app ID or product ID.
-- `--countries` string[]. Countries to include. Pass multiple countries to compare markets; omit when using `--all-countries`.
-- `--all-countries` boolean, default `false`. Include every country by omitting the `--countries` filter.
+- `<app-id>` required integer or string. The app's unified app ID or product ID.
+- `--countries` string[]. Countries to include. Omit to query US only, or pass multiple to compare markets. To include every country, set `--all-countries` instead.
+- `--all-countries` boolean, default `false`. Include every country. Cannot be combined with `--countries`.
 - `--include-rank-trend` boolean, default `false`. Include per-interval rank_trend for each placement.
 - `--sort` string, default `relevance`. Sort placements by relevance or date.
 - `--order` string, default `desc`. Sort direction.
 - `--start` string. Start date (YYYY-MM-DD)
 - `--end` string. End date (YYYY-MM-DD, defaults to today)
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 
 **Examples**
@@ -657,6 +716,56 @@ af store app-listing 10157213 --device-type=tablet
 
 ---
 
+<a id="audience-demographics"></a>
+<a id="command-audience-demographics"></a>
+### af audience demographics
+
+`af audience demographics <app-id>`
+
+Read an app's audience demographics: the estimated age and gender breakdown.
+
+**Options**
+
+- `<app-id>` required integer or string. The app's unified app ID or product ID.
+
+**Examples**
+
+```sh
+# Read Minecraft's audience across all its storefronts (unified app ID).
+af audience demographics ua_X7iNgb
+
+# Read Minecraft's audience on Google Play only (product ID).
+af audience demographics 6938219
+```
+
+---
+
+<a id="audience-cross-usage"></a>
+<a id="command-audience-cross-usage"></a>
+### af audience cross-usage
+
+`af audience cross-usage <app-id> [flags]`
+
+Find the apps that an app's users also use.
+
+**Options**
+
+- `<app-id>` required integer or string. The app's unified app ID or product ID.
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Find the apps ChatGPT's users also use (unified app ID).
+af audience cross-usage ua_miTXv6
+
+# Find the apps ChatGPT's users also use on the App Store only (product ID).
+af audience cross-usage 336744124021
+```
+
+---
+
 <a id="reviews-list"></a>
 <a id="command-reviews-list"></a>
 ### af reviews list
@@ -679,7 +788,7 @@ Read individual reviews for one or more apps. Returns review text, star rating, 
 - `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
 - `--start` string. Start date (YYYY-MM-DD)
 - `--end` string. End date (YYYY-MM-DD, defaults to today)
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number. 1-500.
 
 **Examples**
@@ -773,17 +882,182 @@ af reviews reply rev123 --delete
 
 ---
 
-<a id="keywords-list"></a>
-<a id="command-keywords-list"></a>
-### af keywords list
+<a id="keywords-organic"></a>
+<a id="command-keywords-organic"></a>
+### af keywords organic
 
-`af keywords list [flags]`
+`af keywords organic [flags]`
+
+Check the organic keywords one or more apps rank for, with position, popularity, and competitiveness.
+
+**Options**
+
+- `--product-ids` integer[]. Product identifiers (numeric, one storefront each).
+- `--countries` required string[]. One or more ISO country codes (e.g. US, JP, GB). Pass several to compare markets.
+- `--device-type` string. Device type
+- `--count` integer, default `10`. Number of results to return (min 10).
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Check ChatGPT's current US keyword rankings.
+af keywords organic --product-ids=336744124021 --countries=US
+
+# Check ChatGPT's iPad-only keyword rankings.
+af keywords organic --product-ids=336744124021 --countries=US --device-type=tablet
+
+# Compare ChatGPT and Gemini's US keyword rankings.
+af keywords organic --product-ids=336744124021,337217072531 --countries=US
+```
+
+---
+
+<a id="keywords-paid"></a>
+<a id="command-keywords-paid"></a>
+### af keywords paid
+
+`af keywords paid <product-ids> [flags]`
+
+List the paid keywords one or more apps run ads on, with impression share and organic rank.
+
+**Options**
+
+- `<product-ids>` required integer[]. Product identifiers (numeric, one storefront each).
+- `--days` integer, default `180`. Lookback period in days. Common values: 7, 14, 30, 90, 180, 365.
+- `--countries` required string[]. One or more ISO country codes (e.g. US, JP, GB). Pass several to compare markets.
+- `--device-types` string[]. Filter by device type. Defaults to handheld.
+- `--count` integer, default `10`. Number of results to return (min 10).
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Find Headspace's US paid keywords.
+af keywords paid 15250929 --countries=US
+
+# Compare Headspace's and Calm's US paid keywords.
+af keywords paid 15250929,304554144 --countries=US
+
+# Find Headspace's paid keywords across the US, UK, and Japan.
+af keywords paid 15250929 --countries=US,GB,JP
+
+# Find Headspace's US iPad paid keywords.
+af keywords paid 15250929 --countries=US --device-types=tablet
+
+# Check Headspace's US paid keywords over the last 30 days.
+af keywords paid 15250929 --countries=US --days=30
+```
+
+---
+
+<a id="keywords-ranking-apps"></a>
+<a id="command-keywords-ranking-apps"></a>
+### af keywords ranking-apps
+
+`af keywords ranking-apps <keyword-name> [flags]`
+
+List the apps ranking for a specific keyword in organic search, plus the keyword's own popularity and competitiveness scores.
+
+**Options**
+
+- `<keyword-name>` required string. Keyword to look up.
+- `--country` required string. ISO country code (e.g. US, JP, GB)
+- `--storefront` required string. App store platform (e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront).
+- `--device-type` string. Device type
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Find US iOS apps ranking for "fitness".
+af keywords ranking-apps fitness --country=US --storefront=apple:ios
+
+# Find Google Play apps ranking for "fitness".
+af keywords ranking-apps fitness --country=US --storefront=google_play
+
+# Find US iPad apps ranking for "meditation".
+af keywords ranking-apps meditation --country=US --storefront=apple:ios --device-type=tablet
+```
+
+---
+
+<a id="keywords-advertisers"></a>
+<a id="command-keywords-advertisers"></a>
+### af keywords advertisers
+
+`af keywords advertisers <keyword-name> [flags]`
+
+List the apps advertising on a specific keyword, with each advertiser's impression share, organic rank, and how long they've been bidding.
+
+**Options**
+
+- `<keyword-name>` required string. Keyword to look up advertisers for
+- `--days` integer, default `180`. Lookback period in days. Common values: 7, 14, 30, 90, 180, 365.
+- `--country` required string. ISO country code (e.g. US, JP, GB)
+- `--device-type` string. Device type
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Find US apps advertising on the "notion" brand.
+af keywords advertisers notion --country=US
+
+# Find US iPad apps advertising on "meditation".
+af keywords advertisers meditation --country=US --device-type=tablet
+
+# Find US apps advertising on "fitness" over the last 30 days.
+af keywords advertisers fitness --country=US --days=30
+```
+
+---
+
+<a id="keywords-related"></a>
+<a id="command-keywords-related"></a>
+### af keywords related
+
+`af keywords related <keyword-name> [flags]`
+
+Find keywords related to a seed term for ASO research. Useful for finding alternatives with a similar audience that are more popular or less competitive.
+
+**Options**
+
+- `<keyword-name>` required string. Seed keyword to find related terms for.
+- `--country` required string. ISO country code (e.g. US, JP, GB)
+- `--storefront` required string. App store platform (e.g. apple:ios, google_play, amazon_appstore, steam, windows10, apple:mac, apple:tv, apple:imessage, or another supported storefront).
+- `--device-type` string. Device type
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Find US iOS keywords related to "fitness".
+af keywords related fitness --country=US --storefront=apple:ios
+
+# Find US Google Play keywords related to "fitness".
+af keywords related fitness --country=US --storefront=google_play
+
+# Find US iPad keywords related to "meditation".
+af keywords related meditation --country=US --storefront=apple:ios --device-type=tablet
+```
+
+---
+
+<a id="keywords-tracked"></a>
+<a id="command-keywords-tracked"></a>
+### af keywords tracked
+
+`af keywords tracked [flags]`
 
 List tracked keywords with their opaque IDs.
 
 **Options**
 
-- `--count` integer, default `10`. Number of results to return
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 - `--q` string. Filter by `keyword_term`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
@@ -793,47 +1067,262 @@ List tracked keywords with their opaque IDs.
 
 ```sh
 # List every tracked keyword.
-af keywords list
+af keywords tracked
 
 # Search tracked keywords for "fitness".
-af keywords list --q=fitness
+af keywords tracked --q=fitness
 
 # List the most-recently-tracked keywords first.
-af keywords list --sort-by=-added_on
+af keywords tracked --sort-by=-added_on
 
 # Show each keyword's tracking and sync detail.
-af keywords list --include-relationships
+af keywords tracked --include-relationships
 ```
 
 ---
 
-<a id="keywords-rankings"></a>
-<a id="command-keywords-rankings"></a>
-### af keywords rankings
+<a id="keywords-track"></a>
+<a id="command-keywords-track"></a>
+### af keywords track
 
-`af keywords rankings [flags]`
+`af keywords track <keyword-name> [flags]`
 
-Check the organic keywords one or more apps rank for, with position, popularity, and competitiveness.
+Track a keyword to monitor your app's hourly rank for it over time and get automatic alerts when its position moves.
 
 **Options**
 
-- `--product-ids` integer[]. Product identifiers (numeric, one storefront each).
+- `<keyword-name>` required string. Keyword to start tracking
+- `--product-id` required integer. Product ID of the app to track the keyword for
 - `--country` required string. ISO country code (e.g. US, JP, GB)
-- `--device-type` string. Device type
-- `--count` integer, default `10`. Number of results to return (min 10).
+
+**Examples**
+
+```sh
+# Start tracking "meditation" for one of your apps in the US.
+af keywords track meditation --product-id=336744124021 --country=US
+
+# Track "workout" in Japan.
+af keywords track workout --product-id=336744124021 --country=JP
+```
+
+---
+
+<a id="keywords-untrack"></a>
+<a id="command-keywords-untrack"></a>
+### af keywords untrack
+
+`af keywords untrack <keyword-id>`
+
+Stop tracking a keyword.
+
+**Options**
+
+- `<keyword-id>` required string. Identifier of a tracked keyword row (returned by [`keywords tracked`](#command-keywords-tracked)). Not the keyword text.
+
+**Examples**
+
+```sh
+# Stop tracking a keyword.
+af keywords untrack a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+```
+
+---
+
+<a id="apple-ads-organizations"></a>
+<a id="command-apple-ads-organizations"></a>
+### af apple-ads organizations
+
+`af apple-ads organizations [flags]`
+
+List the Apple Ads organizations you manage campaigns in, with each one's currency and timezone.
+
+**Options**
+
+- `--count` integer, default `10`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 
 **Examples**
 
 ```sh
-# Check ChatGPT's current US keyword rankings.
-af keywords rankings --product-ids=336744124021 --country=US
+# List all the Apple Ads organizations you manage.
+af apple-ads organizations
+```
 
-# Check ChatGPT's iPad-only keyword rankings.
-af keywords rankings --product-ids=336744124021 --country=US --device-type=tablet
+---
 
-# Compare ChatGPT and Gemini's US keyword rankings.
-af keywords rankings --product-ids=336744124021,337217072531 --country=US
+<a id="apple-ads-campaigns"></a>
+<a id="command-apple-ads-campaigns"></a>
+### af apple-ads campaigns
+
+`af apple-ads campaigns [flags]`
+
+List your Apple Ads campaigns with each one's status, budget, targeted countries, and schedule.
+
+**Options**
+
+- `--status` string. Filter to campaigns in one status. Omit to include all statuses.
+- `--name` string. Filter to campaigns whose name contains this text.
+- `--countries` string[]. Filter to campaigns targeting any of these countries.
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# List all your Apple Ads campaigns.
+af apple-ads campaigns
+
+# List only your running campaigns.
+af apple-ads campaigns --status=running
+
+# Search your campaigns by name.
+af apple-ads campaigns --name=Brand
+
+# List campaigns targeting the US or UK.
+af apple-ads campaigns --countries=US,GB
+```
+
+---
+
+<a id="apple-ads-ad-groups"></a>
+<a id="command-apple-ads-ad-groups"></a>
+### af apple-ads ad-groups
+
+`af apple-ads ad-groups [campaign-id] [flags]`
+
+List Apple Ads ad groups with each one's default bid, CPA cap, pricing model, and schedule.
+
+**Options**
+
+- `[campaign-id]` string. Scope to ad groups in one campaign.
+- `--status` string. Filter to ad groups in one status. Omit to include all statuses.
+- `--name` string. Filter to ad groups whose name contains this substring.
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# List all your ad groups across every campaign.
+af apple-ads ad-groups
+
+# List the ad groups in one campaign.
+af apple-ads ad-groups aac_W9YthU
+```
+
+---
+
+<a id="apple-ads-keywords"></a>
+<a id="command-apple-ads-keywords"></a>
+### af apple-ads keywords
+
+`af apple-ads keywords <campaign-id> [flags]`
+
+List a campaign's bid keywords, with each keyword's match type, bid, and whether it's a targeting or negative term.
+
+**Options**
+
+- `<campaign-id>` required string. Campaign whose bid keywords to list.
+- `--ad-group-id` string. Filter to keywords in one ad group.
+- `--status` string. Filter to keywords in one status. Omit to include all statuses.
+- `--match-type` string. Filter to one match type. Omit to include both.
+- `--name` string. Filter to keywords whose text contains this substring.
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Find a running campaign, then list its bid keywords.
+af apple-ads campaigns --status=running
+af apple-ads keywords aac_W9YthU
+```
+
+---
+
+<a id="apple-ads-search-terms"></a>
+<a id="command-apple-ads-search-terms"></a>
+### af apple-ads search-terms
+
+`af apple-ads search-terms <campaign-id> [flags]`
+
+List the actual user search terms that triggered a campaign's ads. Use these to discover new keywords to bid on or exclude.
+
+**Options**
+
+- `<campaign-id>` required string. Campaign whose search terms to list.
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# Find a campaign, then see the user searches that triggered its ads.
+af apple-ads campaigns
+af apple-ads search-terms aac_uDGL4v
+```
+
+---
+
+<a id="apple-ads-report"></a>
+<a id="command-apple-ads-report"></a>
+### af apple-ads report
+
+`af apple-ads report [flags]`
+
+Report Apple Ads performance per campaign (impressions, taps, installs, spend, cost-per-install), plus an account-wide total, over a date range.
+
+**Options**
+
+- `--campaign-ids` string[]. Limit the report to specific campaigns.
+- `--start` string. Start date (YYYY-MM-DD)
+- `--end` string. End date (YYYY-MM-DD, defaults to today)
+- `--count` integer, default `10`. Number of results to return.
+- `--page` integer, default `1`. Page number.
+
+**Examples**
+
+```sh
+# See how much an install costs across all your campaigns.
+af apple-ads report
+
+# Report on July 2026 performance.
+af apple-ads report --start=2026-07-01 --end=2026-07-31
+
+# List campaigns, then report on specific ones.
+af apple-ads campaigns
+af apple-ads report --campaign-ids=aac_uDGL4v
+```
+
+---
+
+<a id="apple-ads-top-keywords"></a>
+<a id="command-apple-ads-top-keywords"></a>
+### af apple-ads top-keywords
+
+`af apple-ads top-keywords <campaign-id> [flags]`
+
+Rank a campaign's top-performing keywords by conversion rate, spend, and installs over a date range. Each list holds the top keywords on one metric.
+
+**Options**
+
+- `<campaign-id>` required string. Campaign to rank keywords for.
+- `--top` integer, default `5`. How many keywords to return per ranking (max 10).
+- `--start` string. Start date (YYYY-MM-DD)
+- `--end` string. End date (YYYY-MM-DD, defaults to today)
+
+**Examples**
+
+```sh
+# Find a campaign, then see its top-performing keywords.
+af apple-ads campaigns
+af apple-ads top-keywords aac_uDGL4v
+
+# Rank a campaign's keywords for a specific week.
+af apple-ads top-keywords aac_uDGL4v --start=2026-07-25 --end=2026-07-31
+
+# Widen each ranking to the maximum of 10 keywords.
+af apple-ads top-keywords aac_uDGL4v --top=10
 ```
 
 ---
@@ -848,7 +1337,7 @@ List every known SDK with its id, or search to find a specific one.
 
 **Options**
 
-- `--count` integer, default `50`. Number of results to return
+- `--count` integer, default `50`. Number of results to return.
 - `--page` integer, default `1`. Page number.
 - `--q` string. Filter by `name`, `description`, `tags`.
 - `--sort-by` string. Sort order. Default: relevance when `q` is set, otherwise list order.
@@ -888,7 +1377,7 @@ Return a reference doc or guide by slug.
 **Examples**
 
 ```sh
-# List every dataset [`metrics query`](#command-metrics-query) accepts.
+# Read the dataset naming conventions and pitfalls for [`metrics query`](#command-metrics-query); the dataset list itself is in [`metrics describe-datasets`](#command-metrics-describe-datasets).
 af docs get numeric_metrics
 
 # Read the catalog query grammar, field-reference syntax, aggregation rules, and worked queries for [`explorer list-products`](#command-explorer-list-products) and [`explorer aggregate-products`](#command-explorer-aggregate-products).
