@@ -3,7 +3,7 @@
 	"name": "com.appfigures/mcp",
 	"title": "Appfigures",
 	"description": "Access your app analytics, ASO tools, and app market intelligence with Appfigures.",
-	"version": "1.0.1",
+	"version": "2.0.1",
 	"websiteUrl": "https://appfigures.com",
 	"icons": [
 		{
@@ -21,7 +21,7 @@
 		{
 			"registryType": "npm",
 			"identifier": "@appfigures/cli",
-			"version": "1.0.1",
+			"version": "2.0.1",
 			"transport": { "type": "stdio" },
 			"packageArguments": [{ "type": "positional", "value": "mcp" }],
 			"environmentVariables": [

@@ -38,7 +38,7 @@ Either login saves the token to your OS credential manager (macOS Keychain, Wind
 
 ## MCP server
 
-`af mcp` runs a local [Model Context Protocol](https://modelcontextprotocol.io) server over stdio, exposing the CLI's app-intelligence commands as MCP tools. Point any MCP client (Claude Desktop, Cursor, and others) at it to let an agent query app metrics, reviews, and store data directly.
+`af mcp` runs a local [Model Context Protocol](https://modelcontextprotocol.io) server over stdio, exposing the CLI's app-intelligence commands as MCP tools. Point any MCP client (Claude Code, Claude Desktop, Cursor, and others) at it to let an agent query app metrics, reviews, and store data directly.
 
 Add it to your client's MCP config:
 
@@ -68,6 +68,14 @@ The server signs in with your stored credentials, so run `af auth login` once fi
 ```
 
 Installed the CLI globally instead of running it through npx? Use `"command": "af"` with `"args": ["mcp"]`.
+
+**Claude Code.** Add it with one command:
+
+```sh
+claude mcp add appfigures -- npx -y @appfigures/cli mcp
+```
+
+Run `af auth login` first to sign in, or append `--env APPFIGURES_API_KEY=<your-token>` for a headless setup.
 
 <!-- prettier-ignore-start -->
 <!-- BEGIN auto-generated COMMANDS -->

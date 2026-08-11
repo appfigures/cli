@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.1] — 2026-08-11
+
+Packaging improvements.
+
 ## [2.0.0] — 2026-08-08
 
 ### Added
