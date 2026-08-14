@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.2] — 2026-08-14
+
+### Fixed
+
+- **MCP tools that return data are usable again in Claude Desktop** and other clients that require the current JSON Schema standard. They were previously rejected as using an unsupported schema, which made every data-returning tool uncallable.
+
 ## [2.0.1] — 2026-08-11
 
 Packaging improvements.
