@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.0.0] — 2026-08-18
+
+### Added
+
+- **Apple Ads keyword performance.** Each of a campaign's keywords now shows its impressions, taps, installs, spend, and cost-per-install over any date range, and you can rank them by any of those metrics.
+- **Apple Ads search-term performance.** Every user search term that triggered your ads now shows its impressions, taps, installs, spend, and cost-per-install.
+- **Tracked-keyword rank views.** See where all your tracked keywords rank for an app and country, and trace how a single keyword's rank moves over time.
+- **Keyword suggestions.** Discover keyword ideas to target for an app and country, ranked by relevance and drawn partly from apps you compete with.
+
+### Breaking
+
+- **`metrics query` output fields are now snake_case.** For example `productId` is `product_id`, `countryCode` is `country`, and `dataType` is `data_type`; the grouping dimensions are now `storefront`, `country`, and `network`.
+- **`apple-ads report` output changed.** Each campaign row's `metrics` is now `performance`, and the metadata `date_range` object (`{ start, end }`) is now `performance_date_range`, a `[start, end]` pair.
+- **`keywords paid` reporting window is now an array.** Its metadata `date_range` changed from `{ start, end }` to a `[start, end]` pair.
+- **`apple-ads search-terms` renamed its `text` field to `keyword_term`.**
+- **Sort flags renamed, with direction split out.** `store categories`, `sdks list`, and `keywords tracked` now take `--sort` (was `--sort-by`) plus a separate `--order`, and the old `-field` descending values are gone. `store categories --id` is now `--category-id`, and `sdks list --id` is now `--sdk-id`.
+- **`apple-ads campaigns` and `apple-ads ad-groups` renamed `--status` to `--display-status`.**
+- **`apple-ads keywords --status` values changed.** It no longer accepts `running` or `on_hold`; use `active`, `paused`, or `deleted`.
+- **Renamed command arguments (affects `af mcp` tools and the typed client, not the plain CLI).** `apps search`'s `query` is now `q`, and `keywords ranking-apps`, `advertisers`, `related`, and `track` take `keyword-term` instead of `keyword-name`.
+
 ## [2.0.2] — 2026-08-14
 
 ### Fixed
