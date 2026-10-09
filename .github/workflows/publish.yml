@@ -15,7 +15,8 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Room for the up-to-20-minute npm wait below.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -130,8 +131,26 @@ jobs:
             --title "@appfigures/cli v${VERSION}" \
             --notes-file release-notes.md
 
-      # Registry listing runs last. The entry references @appfigures/cli@<version>, which npm publish
-      # above already created. Bump MCP_PUBLISHER_VERSION/_SHA256 together from the release checksums.txt.
+      # npm accepts a publish before it serves it: a new version can 404 for minutes while npm
+      # processes it. The registry publish below validates the version against npm and fails on
+      # that 404, so wait until npm serves it.
+      - name: Wait for npm to serve the version
+        run: |
+          set -eo pipefail
+          NAME="$(node -p 'require("./package.json").name')"
+          VERSION="$(node -p 'require("./package.json").version')"
+          for attempt in $(seq 1 80); do
+            if npm view "${NAME}@${VERSION}" version --prefer-online >/dev/null 2>&1; then
+              echo "${NAME}@${VERSION} is live on npm"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::${NAME}@${VERSION} still isn't on npm after 20 minutes. Rerun this workflow once \`npm view ${NAME}@${VERSION}\` returns it."
+          exit 1
+
+      # Registry listing runs last. The entry references @appfigures/cli@<version>, which npm now
+      # serves (step above). Bump MCP_PUBLISHER_VERSION/_SHA256 together from the release checksums.txt.
       - name: Install mcp-publisher
         env:
           MCP_PUBLISHER_VERSION: '1.7.9'
