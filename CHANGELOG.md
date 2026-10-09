@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.0.0] — 2026-10-09
+
+### Added
+
+- **Tracked-app breakdown.** Count your tracked apps by the data available for them, storefront, monetization model, and whether they're yours or competitors'.
+- **Review responses.** Reviews now include your response, and you can filter and count reviews by whether you've responded.
+- **Store listing ratings.** An app's store listing now shows its star rating and number of ratings.
+- **Device breakdown for metrics.** Split metrics by device type, such as handheld and tablet.
+- **Monetization on app records.** Each storefront's record for an app now shows how it makes money.
+
+### Deprecated
+
+- **`af mcp` is deprecated.** Connect your MCP client to the hosted Appfigures server at https://mcp.appfigures.com/mcp instead.
+
+### Fixed
+
+- **Replying to a review returns a confirmation.** It previously reported an error after the reply had already posted.
+- **Tracking a keyword for another app or country keeps its existing tracking.** It previously stopped tracking the keyword everywhere else and counted it against your keyword limit again.
+- **Other data refinements.**
+
+### Breaking
+
+- **`reviews reply` requires `--yes`.** Without it, the command exits without posting or withdrawing anything.
+- **`store app-ranks` returns free and paid chart ranks by default.** Pass `--subtypes=free` for the previous default.
+
 ## [3.0.0] — 2026-08-18
 
 ### Added

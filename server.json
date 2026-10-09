@@ -3,7 +3,7 @@
 	"name": "com.appfigures/mcp",
 	"title": "Appfigures",
 	"description": "Access your app analytics, ASO tools, and app market intelligence with Appfigures.",
-	"version": "3.0.0",
+	"version": "4.0.0",
 	"websiteUrl": "https://appfigures.com",
 	"icons": [
 		{
@@ -17,11 +17,12 @@
 		"source": "github",
 		"id": "1211868816"
 	},
+	"remotes": [{ "type": "streamable-http", "url": "https://mcp.appfigures.com/mcp" }],
 	"packages": [
 		{
 			"registryType": "npm",
 			"identifier": "@appfigures/cli",
-			"version": "3.0.0",
+			"version": "4.0.0",
 			"transport": { "type": "stdio" },
 			"packageArguments": [{ "type": "positional", "value": "mcp" }],
 			"environmentVariables": [

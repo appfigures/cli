@@ -12,6 +12,15 @@ npx @appfigures/cli auth login
 npx @appfigures/cli apps search "youtube"
 ```
 
+## ✨ Four ways to use the power of Appfigures AI
+
+Bring Appfigures into your agent however it's built — as tools it calls, code it writes, a CLI, or over MCP. Whichever you pick, you can do the same things and get the same JSON back.
+
+- 🛠️ **Agent tools** — your agent calls Appfigures as tools while it runs. AI SDK, OpenAI, LangChain. → [Add the tools](https://github.com/appfigures/agent-toolkit#tools-for-your-agent-framework)
+- 📦 **The client** — your agent writes code that queries Appfigures and gets typed data back. → [Use the client](https://github.com/appfigures/agent-toolkit#the-client-for-code-your-agent-writes)
+- 🖥️ **CLI** — run Appfigures from a terminal or a sandbox. → [`@appfigures/cli`](#quick-start)
+- 🔌 **MCP** — connect Appfigures to Claude, ChatGPT, or Cursor. → [Connect the hosted server](#mcp-server)
+
 ## Install
 
 ```sh
@@ -38,44 +47,27 @@ Either login saves the token to your OS credential manager (macOS Keychain, Wind
 
 ## MCP server
 
-`af mcp` runs a local [Model Context Protocol](https://modelcontextprotocol.io) server over stdio, exposing the CLI's app-intelligence commands as MCP tools. Point any MCP client (Claude Code, Claude Desktop, Cursor, and others) at it to let an agent query app metrics, reviews, and store data directly.
+Appfigures runs a hosted [Model Context Protocol](https://modelcontextprotocol.io) server at `https://mcp.appfigures.com/mcp`. Add it to any MCP client that supports remote servers and sign in with your Appfigures account when the client asks. There's nothing to install and no token to manage.
 
-Add it to your client's MCP config:
-
-```json
-{
-	"mcpServers": {
-		"appfigures": {
-			"command": "npx",
-			"args": ["-y", "@appfigures/cli", "mcp"]
-		}
-	}
-}
-```
-
-The server signs in with your stored credentials, so run `af auth login` once first. For a headless setup, pass a token through the client's `env` instead:
-
-```json
-{
-	"mcpServers": {
-		"appfigures": {
-			"command": "npx",
-			"args": ["-y", "@appfigures/cli", "mcp"],
-			"env": { "APPFIGURES_API_KEY": "<your-token>" }
-		}
-	}
-}
-```
-
-Installed the CLI globally instead of running it through npx? Use `"command": "af"` with `"args": ["mcp"]`.
-
-**Claude Code.** Add it with one command:
+**Claude Code.** Add it with one command, then run `/mcp` to sign in:
 
 ```sh
-claude mcp add appfigures -- npx -y @appfigures/cli mcp
+claude mcp add --transport http appfigures https://mcp.appfigures.com/mcp
 ```
 
-Run `af auth login` first to sign in, or append `--env APPFIGURES_API_KEY=<your-token>` for a headless setup.
+**Claude (web and desktop).** Add the URL as a custom connector. See [Add a connector that isn't in the directory](https://claude.com/docs/connectors/custom/add-unlisted).
+
+**ChatGPT.** Add the URL as a custom MCP server with OAuth. See [Connecting Appfigures to ChatGPT](https://help.appfigures.com/en/article/connecting-appfigures-into-chatgpt-mdu20l/).
+
+**Other clients.** Add a remote (Streamable HTTP) server with the same URL. See your client's MCP documentation for where.
+
+The hosted server shares Public Data access and credits with the API and CLI. For request limits and credit costs, see [Appfigures API, CLI, and MCP: Access, Limits, and Public Data](https://help.appfigures.com/en/article/appfigures-api-cli-and-mcp-access-limits-and-public-data-1seiibo/).
+
+For scripts and headless agents that authenticate with `APPFIGURES_API_KEY`, run the `af` commands directly, or use [`@appfigures/agent-toolkit`](https://www.npmjs.com/package/@appfigures/agent-toolkit) from code.
+
+### `af mcp` (deprecated)
+
+`af mcp` runs the same tools as a local stdio server. It's deprecated and will be removed in the next major release. Existing setups keep working until then, but it won't get new MCP features. Move to the hosted server above.
 
 <!-- prettier-ignore-start -->
 <!-- BEGIN auto-generated COMMANDS -->
@@ -88,8 +80,9 @@ Find apps and look up their identity. Other commands take the app IDs these retu
 | Command | Description |
 | ------- | ----------- |
 | <a href="#command-apps-search"><code>af&nbsp;apps&nbsp;search</code></a> | Find apps by name or publisher. Returns one row per unified app. Default returns Apple and Google listings; pass `--all-stores` to include other storefronts. To filter apps by estimate values (e.g. apps with >100k downloads last month) use [`explorer list-products`](#command-explorer-list-products). For estimates broken down by time, country, or storefront, use [`metrics query`](#command-metrics-query) with datasets estimates.sales or estimates.revenue. |
-| <a href="#command-apps-tracked"><code>af&nbsp;apps&nbsp;tracked</code></a> | List the apps your Appfigures account tracks. |
 | <a href="#command-apps-get"><code>af&nbsp;apps&nbsp;get</code></a> | Get an app's record: basic metadata (name, developer, etc) and, if the user tracks it, what data they can access. Pass a product ID for one storefront; unified app ID for all storefronts together. |
+| <a href="#command-apps-tracked"><code>af&nbsp;apps&nbsp;tracked</code></a> | List the apps your Appfigures account tracks. |
+| <a href="#command-apps-breakdown"><code>af&nbsp;apps&nbsp;breakdown</code></a> | Count your tracked apps by data group (e.g. sales, usage, ranks, reviews, keywords), storefront, monetization model, and source (yours vs tracked competitors), plus the total and earliest release date. |
 
 ### Explorer
 
@@ -120,7 +113,7 @@ App store presence: listing content, category ranks, top charts, and featured pl
 | <a href="#command-store-top-charts"><code>af&nbsp;store&nbsp;top&#8209;charts</code></a> | List the top apps in a category chart for a given country and category, with current positions and day-over-day deltas. |
 | <a href="#command-store-categories"><code>af&nbsp;store&nbsp;categories</code></a> | List every store category with its ID. Numeric category IDs required by [`store app-ranks --category-ids`](#command-store-app-ranks) and [`store top-charts --category-id`](#command-store-top-charts) are available here. |
 | <a href="#command-store-featured"><code>af&nbsp;store&nbsp;featured</code></a> | List featured and editorial placements for an app or storefront product. Request 0 rows for summary stats only. |
-| <a href="#command-store-app-listing"><code>af&nbsp;store&nbsp;app&#8209;listing</code></a> | Read the full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request. |
+| <a href="#command-store-app-listing"><code>af&nbsp;store&nbsp;app&#8209;listing</code></a> | Read the full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, ratings, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request. |
 
 ### Audience
 
@@ -137,9 +130,9 @@ Search, summarize, and reply to iOS and Google Play app store reviews.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-reviews-list"><code>af&nbsp;reviews&nbsp;list</code></a> | Read individual reviews for one or more apps. Returns review text, star rating, country, and app version. Filterable by star rating, date range, country, version, and tracking relationship. |
+| <a href="#command-reviews-list"><code>af&nbsp;reviews&nbsp;list</code></a> | Read individual reviews for one or more apps. Returns review text, star rating, country, app version, and your response. Filterable by star rating, date range, country, version, response status, and tracking relationship. |
 | <a href="#command-reviews-breakdown"><code>af&nbsp;reviews&nbsp;breakdown</code></a> | Aggregate review counts for one or more apps, bucketed by dimension. Returns one count per dimension value, plus a global total across the matched set. |
-| <a href="#command-reviews-reply"><code>af&nbsp;reviews&nbsp;reply</code></a> | Post or withdraw a developer response on a specific review. Pass `content` to post; pass `delete: true` to withdraw a previously-posted response. Returns the resulting state (`published`/`pending` for a post, `removed`/`removal_pending` for a withdrawal) along with the submitting account. |
+| <a href="#command-reviews-reply"><code>af&nbsp;reviews&nbsp;reply</code></a> | Post or withdraw a developer response on a specific review. Pass `content` to post; pass `delete: true` to withdraw a previously-posted response. |
 
 ### Keywords
 
@@ -199,7 +192,7 @@ Reference docs and guides for specific actions and common tasks.
 
 | Command | Description |
 | ------- | ----------- |
-| <a href="#command-mcp"><code>af&nbsp;mcp</code></a> | Run an MCP server over stdio for MCP clients like Claude Desktop and Cursor to call Appfigures tools. |
+| <a href="#command-mcp"><code>af&nbsp;mcp</code></a> | (Deprecated) Run a local MCP server over stdio. Use the hosted Appfigures MCP server instead: https://mcp.appfigures.com/mcp |
 
 ### Auth
 
@@ -267,6 +260,31 @@ af apps search minecraft --all-stores
 
 ---
 
+<a id="apps-get"></a>
+<a id="command-apps-get"></a>
+### af apps get
+
+`af apps get <app-id> [flags]`
+
+Get an app's record: basic metadata (name, developer, etc) and, if the user tracks it, what data they can access. Pass a product ID for one storefront; unified app ID for all storefronts together.
+
+**Options**
+
+- `<app-id>` required integer or string. The app's unified app ID or product ID.
+- `--all-stores` boolean, default `false`. For a unified app ID: include member products across all storefronts (Amazon, Steam, Windows, Roku, etc.). When false, `member_products` is restricted to storefronts with app-intelligence coverage (iOS + Google Play). Ignored for product IDs.
+
+**Examples**
+
+```sh
+# Get Minecraft's unified-app record (iOS + Google Play by default).
+af apps get ua_X7iNgb
+
+# Get Minecraft's Google Play product record.
+af apps get 6938219
+```
+
+---
+
 <a id="apps-tracked"></a>
 <a id="command-apps-tracked"></a>
 ### af apps tracked
@@ -309,27 +327,32 @@ af apps tracked --filter-apps-by-type=inapp,subscription
 
 ---
 
-<a id="apps-get"></a>
-<a id="command-apps-get"></a>
-### af apps get
+<a id="apps-breakdown"></a>
+<a id="command-apps-breakdown"></a>
+### af apps breakdown
 
-`af apps get <app-id> [flags]`
+`af apps breakdown [flags]`
 
-Get an app's record: basic metadata (name, developer, etc) and, if the user tracks it, what data they can access. Pass a product ID for one storefront; unified app ID for all storefronts together.
+Count your tracked apps by data group (e.g. sales, usage, ranks, reviews, keywords), storefront, monetization model, and source (yours vs tracked competitors), plus the total and earliest release date.
 
 **Options**
 
-- `<app-id>` required integer or string. The app's unified app ID or product ID.
-- `--all-stores` boolean, default `false`. For a unified app ID: include member products across all storefronts (Amazon, Steam, Windows, Roku, etc.). When false, `member_products` is restricted to storefronts with app-intelligence coverage (iOS + Google Play). Ignored for product IDs.
+- `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
+- `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
+- `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
+- `--filter-apps-by-type` string[]. Narrow the account's tracked apps to products of these types.
 
 **Examples**
 
 ```sh
-# Get Minecraft's unified-app record (iOS + Google Play by default).
-af apps get ua_X7iNgb
+# Check what data the whole account has.
+af apps breakdown
 
-# Get Minecraft's Google Play product record.
-af apps get 6938219
+# Limit to apps you own or that were shared with you.
+af apps breakdown --filter-apps-by-source=own,shared
+
+# Limit to your iOS apps.
+af apps breakdown --filter-apps-by-storefront=apple:ios
 ```
 
 ---
@@ -344,7 +367,7 @@ Read catalog fields for one app or many. Fields referenced by `query` or `sort` 
 
 **Options**
 
-- `--query` array, default `[]`. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
+- `--query` array, default `[]`. Explorer query in JSON array format to select matching catalog Products. Defaults to active Products. Include inactive too: ["match","active",["or",true,false]]. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--extra-fields` string[]. Additional fields to include beyond those your `query` or `sort` already reference. Find field paths (and which you can read) with [`explorer describe-fields`](#command-explorer-describe-fields).
 - `--sort` string. Explorer field name. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--order` string, default `desc`. Sort direction.
@@ -384,7 +407,7 @@ Aggregate across the full catalog of millions of products across Apple, Google P
 **Options**
 
 - `<fields>` required string[]. Field+aggregation pairs (e.g. `all_rating/stats`, `storefronts/terms`). Aggregations: `stats`, `terms`, `histogram`, `date_histogram`, `cardinality`. The full field list is documented in [`docs get catalog_playbook`](#command-docs-get).
-- `--query` array, default `[]`. Explorer query in JSON array format to select matching catalog Products. Missing values and `[]` match every Product across every storefront. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
+- `--query` array, default `[]`. Explorer query in JSON array format to select matching catalog Products. Defaults to active Products. Include inactive too: ["match","active",["or",true,false]]. The full field list and query syntax are documented in [`docs get catalog_playbook`](#command-docs-get).
 - `--allow-unscoped-nested` boolean, default `false`. Escape hatch for intentionally broad queries. Bypasses the default block on unscoped nested predicates that usually inflate results.
 - `--terms-count` integer, default `20`. Maximum buckets returned for each `terms` aggregation. Other aggregation types ignore it.
 - `--date-histogram-interval` string. Bucket granularity for each `date_histogram` aggregation. Other aggregation types ignore it.
@@ -542,7 +565,7 @@ Trace rank history for one or more apps across countries, device types, category
 - `--countries` string[]. Country codes to query. Defaults to every country with rank coverage.
 - `--granularity` string, default `hourly`. Sampling rate. Hourly gives the freshest data; pass `--granularity=daily` for compact multi-day history.
 - `--device-types` string[], default `["handheld"]`. Which device types to include; each ranks in its own chart. Add more to widen the response.
-- `--subtypes` string[], default `["free"]`. Which category subtypes to include; each ranks in its own chart. Add more to widen the response.
+- `--subtypes` string[], default `["free","paid"]`. Which category subtypes to include; each ranks in its own chart. Add more to widen the response.
 - `--category-ids` integer[]. Filter response rows to specific category IDs; omit for all. Category IDs come from [`store categories`](#command-store-categories).
 - `--start` string. Start date (YYYY-MM-DD)
 - `--end` string. End date (YYYY-MM-DD, defaults to today)
@@ -705,7 +728,7 @@ af store featured ua_X7iNgb --count=0
 
 `af store app-listing <product-id> [flags]`
 
-Read the full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request.
+Read the full store listing for one storefront: localized text (name, subtitle, description, release notes) plus screenshots, video, categories, monetization, supported devices, country availability, price, ratings, file size, and age rating. Takes a numeric product ID (one storefront at a time; a unified app has one product per storefront). One locale per request.
 
 **Options**
 
@@ -784,7 +807,7 @@ af audience cross-usage 336744124021
 
 `af reviews list [flags]`
 
-Read individual reviews for one or more apps. Returns review text, star rating, country, and app version. Filterable by star rating, date range, country, version, and tracking relationship.
+Read individual reviews for one or more apps. Returns review text, star rating, country, app version, and your response. Filterable by star rating, date range, country, version, response status, and tracking relationship.
 
 **Options**
 
@@ -792,6 +815,7 @@ Read individual reviews for one or more apps. Returns review text, star rating, 
 - `--versions` string[]. Filter by app version. Pass multiple to combine.
 - `--countries` string[]. Filter to one or more ISO country codes (e.g. US, JP, GB).
 - `--q` string. Search review title and body. Pass multiple keywords to match any. Case-insensitive; combines with other filters.
+- `--response-status` string. Filter by whether you have responded. Omit to include all reviews.
 - `--sort` string. Sort by review date or star rating.
 - `--order` string, default `desc`. Sort direction.
 - `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
@@ -820,6 +844,9 @@ af reviews list --filter-apps-by-id=ua_X7iNgb --start=2025-12-01 --end=2025-12-3
 
 # Page through long results across your own apps.
 af reviews list --filter-apps-by-source=own --count=50 --page=2
+
+# Find your 1-2 star reviews without a response.
+af reviews list --filter-apps-by-source=own --stars=1,2 --response-status=without_response
 ```
 
 ---
@@ -838,6 +865,7 @@ Aggregate review counts for one or more apps, bucketed by dimension. Returns one
 - `--versions` string[]. Filter by app version. Pass multiple to combine.
 - `--countries` string[]. Filter to one or more ISO country codes (e.g. US, JP, GB).
 - `--q` string. Search review title and body. Pass multiple keywords to match any. Case-insensitive; combines with other filters.
+- `--response-status` string. Filter by whether you have responded. Omit to include all reviews.
 - `--filter-apps-by-id` (integer or string)[]. Only include data about specific apps, by product ID or unified app ID. Takes precedence over the other `filterAppsBy*` keys when set. Storefront, source, or type filters are better for app sets that can be described by those criteria.
 - `--filter-apps-by-storefront` string[]. Narrow the account's tracked apps to those on these storefronts (e.g. apple:ios, google_play).
 - `--filter-apps-by-source` string[]. Narrow the account's tracked apps by tracking relationship.
@@ -874,7 +902,7 @@ af reviews breakdown --filter-apps-by-source=own
 
 `af reviews reply <review-id> [flags]`
 
-Post or withdraw a developer response on a specific review. Pass `content` to post; pass `delete: true` to withdraw a previously-posted response. Returns the resulting state (`published`/`pending` for a post, `removed`/`removal_pending` for a withdrawal) along with the submitting account.
+Post or withdraw a developer response on a specific review. Pass `content` to post; pass `delete: true` to withdraw a previously-posted response.
 
 **Options**
 
@@ -1549,7 +1577,7 @@ Make a raw API request for endpoints without a dedicated command. Endpoints, par
 
 `af mcp`
 
-Run an MCP server over stdio for MCP clients like Claude Desktop and Cursor to call Appfigures tools.
+(Deprecated) Run a local MCP server over stdio. Use the hosted Appfigures MCP server instead: https://mcp.appfigures.com/mcp
 
 ---
 
